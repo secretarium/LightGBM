@@ -11,7 +11,7 @@
 #include <LightGBM/utils/openmp_wrapper.h>
 
 #include <string>
-#include <sstream>
+#include <secretarium/libcpp/sstream>
 #include <vector>
 
 namespace LightGBM {

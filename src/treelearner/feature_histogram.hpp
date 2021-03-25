@@ -11,7 +11,10 @@
 #include <LightGBM/utils/array_args.h>
 
 #include <algorithm>
+#pragma warning(push)
+#pragma warning(disable: 4244)
 #include <cmath>
+#pragma warning(pop)
 #include <cstring>
 #include <memory>
 #include <utility>
@@ -603,7 +606,7 @@ class FeatureHistogram {
             meta_->config->path_smooth, right_count, parent_output);
 
     // gain with split is worse than without split
-    if (std::isnan(current_gain) || current_gain <= min_gain_shift) {
+    if (!!__isnan(current_gain) || current_gain <= min_gain_shift) {
       output->gain = kMinScore;
       Log::Warning(
           "'Forced Split' will be ignored since the gain getting worse.");
@@ -684,7 +687,7 @@ class FeatureHistogram {
                                       meta_->config->max_delta_step,
                                       meta_->config->path_smooth, left_count,
                                       parent_output);
-    if (std::isnan(current_gain) || current_gain <= min_gain_shift) {
+    if (!!__isnan(current_gain) || current_gain <= min_gain_shift) {
       output->gain = kMinScore;
       Log::Warning(
           "'Forced Split' will be ignored since the gain getting worse.");

@@ -250,7 +250,7 @@ class RegressionL1loss: public RegressionL2loss {
 
   bool IsRenewTreeOutput() const override { return true; }
 
-  double RenewTreeOutput(double, std::function<double(const label_t*, int)> residual_getter,
+  /*double RenewTreeOutput(double, std::function<double(const label_t*, int)> residual_getter,
                          const data_size_t* index_mapper,
                          const data_size_t* bagging_mapper,
                          data_size_t num_data_in_leaf) const override {
@@ -280,7 +280,7 @@ class RegressionL1loss: public RegressionL2loss {
         #undef weight_reader
       }
     }
-  }
+  }*/
 
   const char* GetName() const override {
     return "regression_l1";
@@ -534,7 +534,7 @@ class RegressionQuantileloss : public RegressionL2loss {
 
   bool IsRenewTreeOutput() const override { return true; }
 
-  double RenewTreeOutput(double, std::function<double(const label_t*, int)> residual_getter,
+  /*double RenewTreeOutput(double, std::function<double(const label_t*, int)> residual_getter,
                          const data_size_t* index_mapper,
                          const data_size_t* bagging_mapper,
                          data_size_t num_data_in_leaf) const override {
@@ -563,7 +563,7 @@ class RegressionQuantileloss : public RegressionL2loss {
         #undef weight_reader
       }
     }
-  }
+  }*/
 
  private:
   score_t alpha_;
@@ -637,7 +637,7 @@ class RegressionMAPELOSS : public RegressionL1loss {
 
   bool IsRenewTreeOutput() const override { return true; }
 
-  double RenewTreeOutput(double, std::function<double(const label_t*, int)> residual_getter,
+  /*double RenewTreeOutput(double, std::function<double(const label_t*, int)> residual_getter,
                          const data_size_t* index_mapper,
                          const data_size_t* bagging_mapper,
                          data_size_t num_data_in_leaf) const override {
@@ -655,7 +655,7 @@ class RegressionMAPELOSS : public RegressionL1loss {
       #undef data_reader
       #undef weight_reader
     }
-  }
+  }*/
 
   const char* GetName() const override {
     return "mape";

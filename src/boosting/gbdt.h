@@ -134,9 +134,9 @@ class GBDT : public GBDTBase {
   * \param snapshot_freq frequence of snapshot
   * \param model_output_path path of model file
   */
-  void Train(int snapshot_freq, const std::string& model_output_path) override;
+  //void Train(int snapshot_freq, const std::string& model_output_path) override;
 
-  void RefitTree(const std::vector<std::vector<int>>& tree_leaf_prediction) override;
+  //void RefitTree(const std::vector<std::vector<int>>& tree_leaf_prediction) override;
 
   /*!
   * \brief Training logic
@@ -144,12 +144,12 @@ class GBDT : public GBDTBase {
   * \param hessians nullptr for using default objective, otherwise use self-defined boosting
   * \return True if cannot train any more
   */
-  bool TrainOneIter(const score_t* gradients, const score_t* hessians) override;
+  //bool TrainOneIter(const score_t* gradients, const score_t* hessians) override;
 
   /*!
   * \brief Rollback one iteration
   */
-  void RollbackOneIter() override;
+  //void RollbackOneIter() override;
 
   /*!
   * \brief Get current iteration
@@ -257,8 +257,8 @@ class GBDT : public GBDTBase {
   * \param feature_importance_type Type of feature importance, 0: split, 1: gain
   * \return Json format string of model
   */
-  std::string DumpModel(int start_iteration, int num_iteration,
-                        int feature_importance_type) const override;
+  /*std::string DumpModel(int start_iteration, int num_iteration,
+                        int feature_importance_type) const override;*/
 
   /*!
   * \brief Translate model to if-else statement
@@ -273,7 +273,7 @@ class GBDT : public GBDTBase {
   * \param filename Filename that want to save to
   * \return is_finish Is training finished or not
   */
-  bool SaveModelToIfElse(int num_iteration, const char* filename) const override;
+  //bool SaveModelToIfElse(int num_iteration, const char* filename) const override;
 
   /*!
   * \brief Save model to file
@@ -283,9 +283,9 @@ class GBDT : public GBDTBase {
   * \param filename Filename that want to save to
   * \return is_finish Is training finished or not
   */
-  bool SaveModelToFile(int start_iteration, int num_iterations,
+  /*bool SaveModelToFile(int start_iteration, int num_iterations,
                        int feature_importance_type,
-                       const char* filename) const override;
+                       const char* filename) const override;*/
 
   /*!
   * \brief Save model to string
@@ -294,7 +294,7 @@ class GBDT : public GBDTBase {
   * \param feature_importance_type Type of feature importance, 0: split, 1: gain
   * \return Non-empty string if succeeded
   */
-  std::string SaveModelToString(int start_iteration, int num_iterations, int feature_importance_type) const override;
+  //std::string SaveModelToString(int start_iteration, int num_iterations, int feature_importance_type) const override;
 
   /*!
   * \brief Restore from a serialized buffer

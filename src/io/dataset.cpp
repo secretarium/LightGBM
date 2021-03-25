@@ -3,6 +3,9 @@
  * Licensed under the MIT License. See LICENSE file in the project root for
  * license information.
  */
+
+#pragma warning(disable: 4172)
+
 #include <LightGBM/dataset.h>
 
 #include <LightGBM/feature_group.h>
@@ -14,7 +17,7 @@
 #include <chrono>
 #include <cstdio>
 #include <limits>
-#include <sstream>
+#include <secretarium/libcpp/sstream>
 #include <unordered_map>
 
 namespace LightGBM {
@@ -585,6 +588,7 @@ MultiValBin* Dataset::GetMultiBinFromAllFeatures(const std::vector<uint32_t>& of
   return ret.release();
 }
 
+
 TrainingShareStates* Dataset::GetShareStates(
     score_t* gradients, score_t* hessians,
     const std::vector<int8_t>& is_feature_used, bool is_constant_hessian,
@@ -630,29 +634,29 @@ TrainingShareStates* Dataset::GetShareStates(
     col_wise_state.reset(new TrainingShareStates());
     row_wise_state.reset(new TrainingShareStates());
 
-    std::chrono::duration<double, std::milli> col_wise_init_time, row_wise_init_time;
-    auto start_time = std::chrono::steady_clock::now();
+    //std::chrono::duration<double, std::milli> col_wise_init_time, row_wise_init_time;
+    //auto start_time = std::chrono::steady_clock::now();
     std::vector<uint32_t> col_wise_offsets;
     col_wise_state->CalcBinOffsets(feature_groups_, &col_wise_offsets, true);
     col_wise_state->SetMultiValBin(GetMultiBinFromSparseFeatures(col_wise_offsets), num_data_,
       feature_groups_, false, true);
-    col_wise_init_time = std::chrono::steady_clock::now() - start_time;
+    //col_wise_init_time = std::chrono::steady_clock::now() - start_time;
 
-    start_time = std::chrono::steady_clock::now();
+    //start_time = std::chrono::steady_clock::now();
     std::vector<uint32_t> row_wise_offsets;
     row_wise_state->CalcBinOffsets(feature_groups_, &row_wise_offsets, false);
     row_wise_state->SetMultiValBin(GetMultiBinFromAllFeatures(row_wise_offsets), num_data_,
       feature_groups_, false, false);
-    row_wise_init_time = std::chrono::steady_clock::now() - start_time;
+    //row_wise_init_time = std::chrono::steady_clock::now() - start_time;
 
     uint64_t max_total_bin = std::max<uint64_t>(row_wise_state->num_hist_total_bin(),
       col_wise_state->num_hist_total_bin());
     std::vector<hist_t, Common::AlignmentAllocator<hist_t, kAlignedSize>>
         hist_data(max_total_bin * 2);
 
-    Log::Debug(
-      "init for col-wise cost %f seconds, init for row-wise cost %f seconds",
-      col_wise_init_time * 1e-3, row_wise_init_time * 1e-3);
+    //Log::Debug(
+    //  "init for col-wise cost %f seconds, init for row-wise cost %f seconds",
+    //  col_wise_init_time * 1e-3, row_wise_init_time * 1e-3);
 
     col_wise_state->is_col_wise = true;
     col_wise_state->is_constant_hessian = is_constant_hessian;
@@ -660,19 +664,19 @@ TrainingShareStates* Dataset::GetShareStates(
     row_wise_state->is_col_wise = false;
     row_wise_state->is_constant_hessian = is_constant_hessian;
     InitTrain(is_feature_used, row_wise_state.get());
-    std::chrono::duration<double, std::milli> col_wise_time, row_wise_time;
-    start_time = std::chrono::steady_clock::now();
+    //std::chrono::duration<double, std::milli> col_wise_time, row_wise_time;
+    //start_time = std::chrono::steady_clock::now();
     ConstructHistograms(is_feature_used, nullptr, num_data_, gradients,
                         hessians, gradients, hessians, col_wise_state.get(),
                         hist_data.data());
-    col_wise_time = std::chrono::steady_clock::now() - start_time;
-    start_time = std::chrono::steady_clock::now();
+    //col_wise_time = std::chrono::steady_clock::now() - start_time;
+    //start_time = std::chrono::steady_clock::now();
     ConstructHistograms(is_feature_used, nullptr, num_data_, gradients,
                         hessians, gradients, hessians, row_wise_state.get(),
                         hist_data.data());
-    row_wise_time = std::chrono::steady_clock::now() - start_time;
+    //row_wise_time = std::chrono::steady_clock::now() - start_time;
 
-    if (col_wise_time < row_wise_time) {
+    /*if (col_wise_time < row_wise_time) {
       auto overhead_cost = row_wise_init_time + row_wise_time + col_wise_time;
       Log::Warning(
           "Auto-choosing col-wise multi-threading, the overhead of testing was "
@@ -694,9 +698,11 @@ TrainingShareStates* Dataset::GetShareStates(
         Log::Debug("Using Dense Multi-Val Bin");
       }
       return row_wise_state.release();
-    }
+    }*/
+    return col_wise_state.release();
   }
 }
+
 
 void Dataset::CopyFeatureMapperFrom(const Dataset* dataset) {
   feature_groups_.clear();
@@ -829,7 +835,7 @@ void Dataset::CopySubrow(const Dataset* fullset,
   }
 }
 
-bool Dataset::SetFloatField(const char* field_name, const float* field_data,
+/*bool Dataset::SetFloatField(const char* field_name, const float* field_data,
                             data_size_t num_element) {
   std::string name(field_name);
   name = Common::Trim(name);
@@ -849,7 +855,7 @@ bool Dataset::SetFloatField(const char* field_name, const float* field_data,
     return false;
   }
   return true;
-}
+}*/
 
 bool Dataset::SetDoubleField(const char* field_name, const double* field_data,
                              data_size_t num_element) {
@@ -925,7 +931,7 @@ bool Dataset::GetIntField(const char* field_name, data_size_t* out_len,
   return true;
 }
 
-void Dataset::SaveBinaryFile(const char* bin_filename) {
+/*void Dataset::SaveBinaryFile(const char* bin_filename) {
   if (bin_filename != nullptr && std::string(bin_filename) == data_filename_) {
     Log::Warning("Bianry file %s already exists", bin_filename);
     return;
@@ -1055,6 +1061,7 @@ void Dataset::SaveBinaryFile(const char* bin_filename) {
   }
 }
 
+
 void Dataset::DumpTextFile(const char* text_filename) {
   FILE* file = NULL;
 #if _MSC_VER
@@ -1106,6 +1113,7 @@ void Dataset::DumpTextFile(const char* text_filename) {
   }
   fclose(file);
 }
+*/
 
 void Dataset::InitTrain(const std::vector<int8_t>& is_feature_used,
                         TrainingShareStates* share_state) const {

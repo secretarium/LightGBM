@@ -6,13 +6,13 @@
 #define LIGHTGBM_UTILS_TEXT_READER_H_
 
 #include <LightGBM/utils/log.h>
-#include <LightGBM/utils/pipeline_reader.h>
+//#include <LightGBM/utils/pipeline_reader.h>
 #include <LightGBM/utils/random.h>
 
 #include <string>
 #include <cstdio>
 #include <functional>
-#include <sstream>
+#include <secretarium/libcpp/sstream>
 #include <vector>
 
 namespace LightGBM {
@@ -235,6 +235,7 @@ class TextReader {
     });
   }
 
+/*
   INDEX_T ReadAllAndProcessParallelWithFilter(const std::function<void(INDEX_T, const std::vector<std::string>&)>& process_fun, const std::function<bool(INDEX_T, INDEX_T)>& filter_fun) {
     last_line_ = "";
     INDEX_T total_cnt = 0;
@@ -308,7 +309,7 @@ class TextReader {
 
   INDEX_T ReadAllAndProcessParallel(const std::function<void(INDEX_T, const std::vector<std::string>&)>& process_fun) {
     return ReadAllAndProcessParallelWithFilter(process_fun, [](INDEX_T, INDEX_T) { return true; });
-  }
+  }*/
 
   INDEX_T ReadPartAndProcessParallel(const std::vector<INDEX_T>& used_data_indices, const std::function<void(INDEX_T, const std::vector<std::string>&)>& process_fun) {
     return ReadAllAndProcessParallelWithFilter(process_fun,

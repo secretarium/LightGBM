@@ -12,7 +12,7 @@
 #include <limits>
 #include <string>
 #include <functional>
-#include <sstream>
+#include <secretarium/libcpp/sstream>
 #include <unordered_map>
 #include <vector>
 
@@ -462,7 +462,7 @@ class MultiValBin {
 };
 
 inline uint32_t BinMapper::ValueToBin(double value) const {
-  if (std::isnan(value)) {
+  if (!!__isnan(value)) {
     if (bin_type_ == BinType::CategoricalBin) {
       return 0;
     } else if (missing_type_ == MissingType::NaN) {

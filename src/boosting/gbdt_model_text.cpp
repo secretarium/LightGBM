@@ -9,7 +9,7 @@
 #include <LightGBM/utils/common.h>
 
 #include <string>
-#include <sstream>
+#include <secretarium/libcpp/sstream>
 #include <vector>
 
 #include "gbdt.h"
@@ -18,7 +18,7 @@ namespace LightGBM {
 
 const char* kModelVersion = "v3";
 
-std::string GBDT::DumpModel(int start_iteration, int num_iteration, int feature_importance_type) const {
+/*std::string GBDT::DumpModel(int start_iteration, int num_iteration, int feature_importance_type) const {
   std::stringstream str_buf;
   Common::C_stringstream(str_buf);
 
@@ -120,7 +120,7 @@ std::string GBDT::DumpModel(int start_iteration, int num_iteration, int feature_
 
   return str_buf.str();
 }
-
+*/
 std::string GBDT::ModelToIfElse(int num_iteration) const {
   std::stringstream str_buf;
   Common::C_stringstream(str_buf);
@@ -131,7 +131,7 @@ std::string GBDT::ModelToIfElse(int num_iteration) const {
   str_buf << "#include <LightGBM/metric.h>" << '\n';
   str_buf << "#include <LightGBM/prediction_early_stop.h>" << '\n';
   str_buf << "#include <ctime>" << '\n';
-  str_buf << "#include <sstream>" << '\n';
+  str_buf << "#include <secretarium/libcpp/sstream>" << '\n';
   str_buf << "#include <chrono>" << '\n';
   str_buf << "#include <string>" << '\n';
   str_buf << "#include <vector>" << '\n';
@@ -283,8 +283,8 @@ std::string GBDT::ModelToIfElse(int num_iteration) const {
   return str_buf.str();
 }
 
-bool GBDT::SaveModelToIfElse(int num_iteration, const char* filename) const {
-  /*! \brief File to write models */
+/*bool GBDT::SaveModelToIfElse(int num_iteration, const char* filename) const {
+  //! \brief File to write models 
   std::ofstream output_file;
   std::ifstream ifs(filename);
   if (ifs.good()) {
@@ -403,7 +403,7 @@ std::string GBDT::SaveModelToString(int start_iteration, int num_iteration, int 
 }
 
 bool GBDT::SaveModelToFile(int start_iteration, int num_iteration, int feature_importance_type, const char* filename) const {
-  /*! \brief File to write models */
+  //! \brief File to write models 
   auto writer = VirtualFileWriter::Make(filename);
   if (!writer->Init()) {
     Log::Fatal("Model file %s is not available for writes", filename);
@@ -411,7 +411,7 @@ bool GBDT::SaveModelToFile(int start_iteration, int num_iteration, int feature_i
   std::string str_to_write = SaveModelToString(start_iteration, num_iteration, feature_importance_type);
   auto size = writer->Write(str_to_write.c_str(), str_to_write.size());
   return size > 0;
-}
+}*/
 
 bool GBDT::LoadModelFromString(const char* buffer, size_t len) {
   // use serialized string to restore this object

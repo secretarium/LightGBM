@@ -14,11 +14,18 @@
 #include <LightGBM/utils/random.h>
 
 #include <string>
+#pragma warning(push)
+#pragma warning(disable: 4244)
 #include <cmath>
+#pragma warning(pop)
 #include <cstdio>
 #include <memory>
 #include <random>
+#pragma warning( push )
+#pragma warning(disable : 4172)
 #include <vector>
+#pragma warning( pop )
+
 
 #include "col_sampler.hpp"
 #include "data_partition.hpp"
@@ -75,12 +82,12 @@ class SerialTreeLearner: public TreeLearner {
     }
   }
 
-  Tree* Train(const score_t* gradients, const score_t *hessians, bool is_first_tree) override;
+  //Tree* Train(const score_t* gradients, const score_t *hessians, bool is_first_tree) override;
 
-  Tree* FitByExistingTree(const Tree* old_tree, const score_t* gradients, const score_t* hessians) const override;
+  //Tree* FitByExistingTree(const Tree* old_tree, const score_t* gradients, const score_t* hessians) const override;
 
-  Tree* FitByExistingTree(const Tree* old_tree, const std::vector<int>& leaf_pred,
-                          const score_t* gradients, const score_t* hessians) const override;
+  //Tree* FitByExistingTree(const Tree* old_tree, const std::vector<int>& leaf_pred,
+  //                        const score_t* gradients, const score_t* hessians) const override;
 
   void SetBaggingData(const Dataset* subset, const data_size_t* used_indices, data_size_t num_data) override {
     if (subset == nullptr) {
@@ -112,8 +119,8 @@ class SerialTreeLearner: public TreeLearner {
     }
   }
 
-  void RenewTreeOutput(Tree* tree, const ObjectiveFunction* obj, std::function<double(const label_t*, int)> residual_getter,
-                       data_size_t total_num_data, const data_size_t* bag_indices, data_size_t bag_cnt) const override;
+  //void RenewTreeOutput(Tree* tree, const ObjectiveFunction* obj, std::function<double(const label_t*, int)> residual_getter,
+  //                     data_size_t total_num_data, const data_size_t* bag_indices, data_size_t bag_cnt) const override;
 
   /*! \brief Get output of parent node, used for path smoothing */
   double GetParentOutput(const Tree* tree, const LeafSplits* leaf_splits) const;
@@ -133,7 +140,7 @@ class SerialTreeLearner: public TreeLearner {
   /*!
   * \brief Some initial works before training
   */
-  virtual void BeforeTrain();
+  //virtual void BeforeTrain();
 
   /*!
   * \brief Some initial works before FindBestSplit

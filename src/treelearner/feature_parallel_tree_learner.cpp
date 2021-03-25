@@ -23,7 +23,7 @@ template <typename TREELEARNER_T>
 void FeatureParallelTreeLearner<TREELEARNER_T>::Init(const Dataset* train_data, bool is_constant_hessian) {
   TREELEARNER_T::Init(train_data, is_constant_hessian);
   rank_ = Network::rank();
-  num_machines_ = Network::num_machines();
+  num_machines_ = 1; //Network::num_machines();
 
   auto max_cat_threshold = this->config_->max_cat_threshold;
   // need to be able to hold smaller and larger best splits in SyncUpGlobalBestSplit

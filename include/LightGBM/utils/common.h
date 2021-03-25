@@ -17,24 +17,28 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
-#include <cstdio>
+#pragma warning(push)
+#pragma warning(disable: 4244)
+#include <cmath>
+#pragma warning(pop)
 #include <cstring>
 #include <functional>
-#include <iomanip>
+#include <secretarium/libcpp/iomanip>
 #include <iterator>
 #include <map>
 #include <memory>
-#include <sstream>
+#include <secretarium/libcpp/sstream_libcpp.h>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <secretarium/libcpp/strstream_libcpp.h>
 
-#if (!((defined(sun) || defined(__sun)) && (defined(__SVR4) || defined(__svr4__))))
+/*#if (!((defined(sun) || defined(__sun)) && (defined(__SVR4) || defined(__svr4__))))
 #define FMT_HEADER_ONLY
 #include "../../../external_libs/fmt/include/fmt/format.h"
-#endif
-#include "../../../external_libs/fast_double_parser/include/fast_double_parser.h"
+#endif*/
+#include <LightGBM/fast_double_parser/fast_double_parser.h>
 
 #ifdef _MSC_VER
 #include <intrin.h>
@@ -43,6 +47,8 @@
 
 #if defined(_MSC_VER)
 #include <malloc.h>
+#define _mm_malloc(a, b) malloc(a)
+#define _mm_free(a) free(a)
 #elif MM_MALLOC
 #include <mm_malloc.h>
 // https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
@@ -465,10 +471,10 @@ inline static std::string Join(const std::vector<T>& strs, const char* delimiter
     C_stringstream(str_buf);
   }
   str_buf << std::setprecision(std::numeric_limits<double>::digits10 + 2);
-  str_buf << strs[0];
+  str_buf << std::to_string(strs[0]).data();
   for (size_t i = 1; i < strs.size(); ++i) {
     str_buf << delimiter;
-    str_buf << strs[i];
+    str_buf << std::to_string(strs[i]).data();
   }
   return str_buf.str();
 }
@@ -609,7 +615,7 @@ inline static std::vector<int> VectorSize(const std::vector<std::vector<T>>& dat
 }
 
 inline static double AvoidInf(double x) {
-  if (std::isnan(x)) {
+  if (!!__isnan(x)) {
     return 0.0;
   } else if (x >= 1e300) {
     return 1e300;
@@ -621,7 +627,7 @@ inline static double AvoidInf(double x) {
 }
 
 inline static float AvoidInf(float x) {
-  if (std::isnan(x)) {
+  if (!!__isnan(x)) {
     return 0.0f;
   } else if (x >= 1e38) {
     return 1e38f;
@@ -1171,6 +1177,8 @@ inline static std::vector<T> StringToArray(const std::string& str, char delimite
 *       Correct usage will never incur in this problem:
 *         - The received buffer size shall be sufficient at all times for the input format string and value.
 */
+
+/*
 template <typename T>
 inline static void format_to_buf(char* buffer, const size_t buf_len, const char* format, const T value) {
     auto result = fmt::format_to_n(buffer, buf_len, format, value);
@@ -1209,7 +1217,7 @@ struct __TToStringHelper<T, true, true> {
 * \note If ``high_precision_output`` is set to true,
 *       floating point values are output with more digits of precision.
 */
-template<bool high_precision_output = false, typename T>
+/*template<bool high_precision_output = false, typename T>
 inline static std::string ArrayToString(const std::vector<T>& arr, size_t n) {
   if (arr.empty() || n == 0) {
     return std::string("");
@@ -1226,7 +1234,7 @@ inline static std::string ArrayToString(const std::vector<T>& arr, size_t n) {
     str_buf << ' ' << buffer.data();
   }
   return str_buf.str();
-}
+}*/
 #endif  // (!((defined(sun) || defined(__sun)) && (defined(__SVR4) || defined(__svr4__))))
 
 

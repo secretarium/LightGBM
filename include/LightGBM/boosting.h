@@ -69,12 +69,12 @@ class LIGHTGBM_EXPORT Boosting {
   virtual void AddValidDataset(const Dataset* valid_data,
                                const std::vector<const Metric*>& valid_metrics) = 0;
 
-  virtual void Train(int snapshot_freq, const std::string& model_output_path) = 0;
+  //virtual void Train(int snapshot_freq, const std::string& model_output_path) = 0;
 
   /*!
   * \brief Update the tree output by new training data
   */
-  virtual void RefitTree(const std::vector<std::vector<int>>& tree_leaf_prediction) = 0;
+  //virtual void RefitTree(const std::vector<std::vector<int>>& tree_leaf_prediction) = 0;
 
   /*!
   * \brief Training logic
@@ -82,12 +82,12 @@ class LIGHTGBM_EXPORT Boosting {
   * \param hessians nullptr for using default objective, otherwise use self-defined boosting
   * \return True if cannot train anymore
   */
-  virtual bool TrainOneIter(const score_t* gradients, const score_t* hessians) = 0;
+  //virtual bool TrainOneIter(const score_t* gradients, const score_t* hessians) = 0;
 
   /*!
   * \brief Rollback one iteration
   */
-  virtual void RollbackOneIter() = 0;
+  //virtual void RollbackOneIter() = 0;
 
   /*!
   * \brief return current iteration
@@ -179,7 +179,7 @@ class LIGHTGBM_EXPORT Boosting {
   * \param feature_importance_type Type of feature importance, 0: split, 1: gain
   * \return Json format string of model
   */
-  virtual std::string DumpModel(int start_iteration, int num_iteration, int feature_importance_type) const = 0;
+  //virtual std::string DumpModel(int start_iteration, int num_iteration, int feature_importance_type) const = 0;
 
   /*!
   * \brief Translate model to if-else statement
@@ -194,7 +194,7 @@ class LIGHTGBM_EXPORT Boosting {
   * \param filename Filename that want to save to
   * \return is_finish Is training finished or not
   */
-  virtual bool SaveModelToIfElse(int num_iteration, const char* filename) const = 0;
+  //virtual bool SaveModelToIfElse(int num_iteration, const char* filename) const = 0;
 
   /*!
   * \brief Save model to file
@@ -204,7 +204,7 @@ class LIGHTGBM_EXPORT Boosting {
   * \param filename Filename that want to save to
   * \return true if succeeded
   */
-  virtual bool SaveModelToFile(int start_iteration, int num_iterations, int feature_importance_type, const char* filename) const = 0;
+  //virtual bool SaveModelToFile(int start_iteration, int num_iterations, int feature_importance_type, const char* filename) const = 0;
 
   /*!
   * \brief Save model to string
@@ -213,7 +213,7 @@ class LIGHTGBM_EXPORT Boosting {
   * \param feature_importance_type Type of feature importance, 0: split, 1: gain
   * \return Non-empty string if succeeded
   */
-  virtual std::string SaveModelToString(int start_iteration, int num_iterations, int feature_importance_type) const = 0;
+  //virtual std::string SaveModelToString(int start_iteration, int num_iterations, int feature_importance_type) const = 0;
 
   /*!
   * \brief Restore from a serialized string

@@ -55,7 +55,7 @@ class DART: public GBDT {
   /*!
   * \brief one training iteration
   */
-  bool TrainOneIter(const score_t* gradient, const score_t* hessian) override {
+  /*bool TrainOneIter(const score_t* gradient, const score_t* hessian) override {
     is_update_score_cur_iter_ = false;
     bool ret = GBDT::TrainOneIter(gradient, hessian);
     if (ret) {
@@ -68,7 +68,7 @@ class DART: public GBDT {
       sum_weight_ += shrinkage_rate_;
     }
     return false;
-  }
+  }*/
 
   /*!
   * \brief Get current training score

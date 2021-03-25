@@ -47,7 +47,10 @@ typedef double label_t;
 typedef float label_t;
 #endif
 
+#pragma warning(push)
+#pragma warning(disable: 4244)
 const score_t kMinScore = -std::numeric_limits<score_t>::infinity();
+#pragma warning(pop)
 
 const score_t kEpsilon = 1e-15f;
 

@@ -9,7 +9,10 @@
 #include <LightGBM/utils/file_io.h>
 
 #include <algorithm>
+#pragma warning(push)
+#pragma warning(disable: 4244)
 #include <cmath>
+#pragma warning(pop)
 #include <cstdint>
 #include <cstring>
 
@@ -329,7 +332,7 @@ namespace LightGBM {
     int na_cnt = 0;
     int tmp_num_sample_values = 0;
     for (int i = 0; i < num_sample_values; ++i) {
-      if (!std::isnan(values[i])) {
+      if (!!!__isnan(values[i])) {
         values[tmp_num_sample_values++] = values[i];
       }
     }

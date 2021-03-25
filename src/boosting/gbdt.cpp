@@ -5,7 +5,7 @@
 #include "gbdt.h"
 
 #include <LightGBM/metric.h>
-#include <LightGBM/network.h>
+//#include <LightGBM/network.h>
 #include <LightGBM/objective_function.h>
 #include <LightGBM/prediction_early_stop.h>
 #include <LightGBM/utils/common.h>
@@ -13,7 +13,7 @@
 
 #include <chrono>
 #include <ctime>
-#include <sstream>
+#include <secretarium/libcpp/sstream>
 
 namespace LightGBM {
 
@@ -70,13 +70,13 @@ void GBDT::Init(const Config* config, const Dataset* train_data, const Objective
   }
 
   // load forced_splits file
-  if (!config->forcedsplits_filename.empty()) {
+  /*if (!config->forcedsplits_filename.empty()) {
     std::ifstream forced_splits_file(config->forcedsplits_filename.c_str());
     std::stringstream buffer;
     buffer << forced_splits_file.rdbuf();
     std::string err;
     forced_splits_json_ = Json::parse(buffer.str(), &err);
-  }
+  }*/
 
   objective_function_ = objective_function;
   num_tree_per_iteration_ = num_class_;
@@ -261,7 +261,7 @@ void GBDT::Bagging(int iter) {
   }
 }
 
-void GBDT::Train(int snapshot_freq, const std::string& model_output_path) {
+/*void GBDT::Train(int snapshot_freq, const std::string& model_output_path) {
   Common::FunctionTimer fun_timer("GBDT::Train", global_timer);
   bool is_finished = false;
   auto start_time = std::chrono::steady_clock::now();
@@ -318,7 +318,7 @@ void GBDT::RefitTree(const std::vector<std::vector<int>>& tree_leaf_prediction) 
       models_[model_index].reset(new_tree);
     }
   }
-}
+}*/
 
 /* If the custom "average" is implemented it will be used inplace of the label average (if enabled)
 *
@@ -335,9 +335,9 @@ double ObtainAutomaticInitialScore(const ObjectiveFunction* fobj, int class_id) 
   if (fobj != nullptr) {
     init_score = fobj->BoostFromScore(class_id);
   }
-  if (Network::num_machines() > 1) {
+  /*if (Network::num_machines() > 1) {
     init_score = Network::GlobalSyncUpByMean(init_score);
-  }
+  }*/
   return init_score;
 }
 
@@ -366,7 +366,7 @@ double GBDT::BoostFromAverage(int class_id, bool update_scorer) {
   return 0.0f;
 }
 
-bool GBDT::TrainOneIter(const score_t* gradients, const score_t* hessians) {
+/*bool GBDT::TrainOneIter(const score_t* gradients, const score_t* hessians) {
   Common::FunctionTimer fun_timer("GBDT::TrainOneIter", global_timer);
   std::vector<double> init_scores(num_tree_per_iteration_, 0.0);
   // boosting first
@@ -467,7 +467,7 @@ void GBDT::RollbackOneIter() {
     models_.pop_back();
   }
   --iter_;
-}
+}*/
 
 bool GBDT::EvalAndCheckEarlyStopping() {
   bool is_met_early_stopping = false;
@@ -757,7 +757,7 @@ void GBDT::ResetConfig(const Config* config) {
   if (train_data_ != nullptr) {
     ResetBaggingConfig(new_config.get(), false);
   }
-  if (config_.get() != nullptr && config_->forcedsplits_filename != new_config->forcedsplits_filename) {
+  /*if (config_.get() != nullptr && config_->forcedsplits_filename != new_config->forcedsplits_filename) {
     // load forced_splits file
     if (!new_config->forcedsplits_filename.empty()) {
       std::ifstream forced_splits_file(
@@ -771,7 +771,7 @@ void GBDT::ResetConfig(const Config* config) {
       forced_splits_json_ = Json();
       tree_learner_->SetForcedSplit(nullptr);
     }
-  }
+  }*/
   config_.reset(new_config.release());
 }
 

@@ -396,12 +396,12 @@ void Config::CheckParamConflict() {
 
 std::string Config::ToString() const {
   std::stringstream str_buf;
-  str_buf << "[boosting: " << boosting << "]\n";
-  str_buf << "[objective: " << objective << "]\n";
-  str_buf << "[metric: " << Common::Join(metric, ",") << "]\n";
-  str_buf << "[tree_learner: " << tree_learner << "]\n";
-  str_buf << "[device_type: " << device_type << "]\n";
-  str_buf << SaveMembersToString();
+  str_buf << "[boosting: " << boosting.data() << "]\n";
+  str_buf << "[objective: " << objective.data() << "]\n";
+  str_buf << "[metric: " << Common::Join(metric, ",").data() << "]\n";
+  str_buf << "[tree_learner: " << tree_learner.data() << "]\n";
+  str_buf << "[device_type: " << device_type.data() << "]\n";
+  str_buf << SaveMembersToString().data();
   return str_buf.str();
 }
 

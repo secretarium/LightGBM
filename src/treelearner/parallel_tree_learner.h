@@ -5,7 +5,7 @@
 #ifndef LIGHTGBM_TREELEARNER_PARALLEL_TREE_LEARNER_H_
 #define LIGHTGBM_TREELEARNER_PARALLEL_TREE_LEARNER_H_
 
-#include <LightGBM/network.h>
+//#include <LightGBM/network.h>
 #include <LightGBM/utils/array_args.h>
 
 #include <cstring>

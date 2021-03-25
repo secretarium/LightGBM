@@ -2,6 +2,13 @@
  * Copyright (c) 2016 Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See LICENSE file in the project root for license information.
  */
+
+
+#pragma warning( push )
+#pragma warning(disable : 4172)
+#include <vector>
+#pragma warning( pop )
+
 #include <LightGBM/c_api.h>
 
 #include <LightGBM/boosting.h>
@@ -9,14 +16,14 @@
 #include <LightGBM/dataset.h>
 #include <LightGBM/dataset_loader.h>
 #include <LightGBM/metric.h>
-#include <LightGBM/network.h>
+//#include <LightGBM/network.h>
 #include <LightGBM/objective_function.h>
 #include <LightGBM/prediction_early_stop.h>
 #include <LightGBM/utils/common.h>
 #include <LightGBM/utils/log.h>
 #include <LightGBM/utils/openmp_wrapper.h>
 #include <LightGBM/utils/random.h>
-#include <LightGBM/utils/threading.h>
+//#include <LightGBM/utils/threading.h>
 
 #include <string>
 #include <cstdio>
@@ -24,11 +31,10 @@
 #include <memory>
 #include <mutex>
 #include <stdexcept>
-#include <vector>
 
-#include "application/predictor.hpp"
-#include <LightGBM/utils/yamc/alternate_shared_mutex.hpp>
-#include <LightGBM/utils/yamc/yamc_shared_lock.hpp>
+//#include "application/predictor.hpp"
+//#include <LightGBM/utils/yamc/alternate_shared_mutex.hpp>
+//#include <LightGBM/utils/yamc/yamc_shared_lock.hpp>
 
 namespace LightGBM {
 
@@ -56,6 +62,7 @@ yamc::shared_lock<yamc::alternate::shared_mutex> lock(&mtx);
 
 const int PREDICTOR_TYPES = 4;
 
+/*
 // Single row predictor to abstract away caching logic
 class SingleRowPredictor {
  public:
@@ -102,7 +109,7 @@ class SingleRowPredictor {
   int iter_;
   int num_total_model_;
 };
-
+*/
 class Booster {
  public:
   explicit Booster(const char* filename) {
@@ -130,16 +137,16 @@ class Booster {
     if (config_.tree_learner == std::string("feature")) {
       Log::Fatal("Do not support feature parallel in c api");
     }
-    if (Network::num_machines() == 1 && config_.tree_learner != std::string("serial")) {
+    /*if (Network::num_machines() == 1 && config_.tree_learner != std::string("serial")) {
       Log::Warning("Only find one worker, will switch to serial tree learner");
       config_.tree_learner = "serial";
-    }
+    }*/
     boosting_->Init(&config_, train_data_, objective_fun_.get(),
                     Common::ConstPtrInVectorWrapper<Metric>(train_metric_));
   }
 
   void MergeFrom(const Booster* other) {
-    UNIQUE_LOCK(mutex_)
+    // UNIQUE_LOCK(mutex_)
     boosting_->MergeFrom(other->boosting_.get());
   }
 
@@ -172,7 +179,7 @@ class Booster {
 
   void ResetTrainingData(const Dataset* train_data) {
     if (train_data != train_data_) {
-      UNIQUE_LOCK(mutex_)
+      // UNIQUE_LOCK(mutex_)
       train_data_ = train_data;
       CreateObjectiveAndMetrics();
       // reset the boosting
@@ -293,7 +300,7 @@ class Booster {
   }
 
   void ResetConfig(const char* parameters) {
-    UNIQUE_LOCK(mutex_)
+    // UNIQUE_LOCK(mutex_)
     auto param = Config::Str2Map(parameters);
     Config new_config;
     new_config.Set(param);
@@ -333,7 +340,7 @@ class Booster {
   }
 
   void AddValidData(const Dataset* valid_data) {
-    UNIQUE_LOCK(mutex_)
+    // UNIQUE_LOCK(mutex_)
     valid_metrics_.emplace_back();
     for (auto metric_type : config_.metric) {
       auto metric = std::unique_ptr<Metric>(Metric::CreateMetric(metric_type, config_));
@@ -346,13 +353,13 @@ class Booster {
                                Common::ConstPtrInVectorWrapper<Metric>(valid_metrics_.back()));
   }
 
-  bool TrainOneIter() {
-    UNIQUE_LOCK(mutex_)
+  /*bool TrainOneIter() {
+    // UNIQUE_LOCK(mutex_)
     return boosting_->TrainOneIter(nullptr, nullptr);
   }
 
   void Refit(const int32_t* leaf_preds, int32_t nrow, int32_t ncol) {
-    UNIQUE_LOCK(mutex_)
+    // UNIQUE_LOCK(mutex_)
     std::vector<std::vector<int32_t>> v_leaf_preds(nrow, std::vector<int32_t>(ncol, 0));
     for (int i = 0; i < nrow; ++i) {
       for (int j = 0; j < ncol; ++j) {
@@ -363,17 +370,17 @@ class Booster {
   }
 
   bool TrainOneIter(const score_t* gradients, const score_t* hessians) {
-    UNIQUE_LOCK(mutex_)
+    // UNIQUE_LOCK(mutex_)
     return boosting_->TrainOneIter(gradients, hessians);
   }
 
   void RollbackOneIter() {
-    UNIQUE_LOCK(mutex_)
+    // UNIQUE_LOCK(mutex_)
     boosting_->RollbackOneIter();
   }
 
   void SetSingleRowPredictor(int start_iteration, int num_iteration, int predict_type, const Config& config) {
-      UNIQUE_LOCK(mutex_)
+      // UNIQUE_LOCK(mutex_)
       if (single_row_predictor_[predict_type].get() == nullptr ||
           !single_row_predictor_[predict_type]->IsPredictorEqual(config, num_iteration, boosting_.get())) {
         single_row_predictor_[predict_type].reset(new SingleRowPredictor(predict_type, boosting_.get(),
@@ -389,7 +396,7 @@ class Booster {
       Log::Fatal("The number of features in data (%d) is not the same as it was in training data (%d).\n"\
                  "You can set ``predict_disable_shape_check=true`` to discard this error, but please be aware what you are doing.", ncol, boosting_->MaxFeatureIdx() + 1);
     }
-    UNIQUE_LOCK(mutex_)
+    // UNIQUE_LOCK(mutex_)
     const auto& single_row_predictor = single_row_predictor_[predict_type];
     auto one_row = get_row_fun(0);
     auto pred_wrt_ptr = out_result;
@@ -424,7 +431,7 @@ class Booster {
                std::function<std::vector<std::pair<int, double>>(int row_idx)> get_row_fun,
                const Config& config,
                double* out_result, int64_t* out_len) const {
-    SHARED_LOCK(mutex_);
+    // // SHARED_LOCK(mutex_);
     auto predictor = CreatePredictor(start_iteration, num_iteration, predict_type, ncol, config);
     bool is_predict_leaf = false;
     bool predict_contrib = false;
@@ -495,7 +502,7 @@ class Booster {
                         const Config& config,
                         int64_t* out_len, void** out_indptr, int indptr_type,
                         int32_t** out_indices, void** out_data, int data_type) const {
-    SHARED_LOCK(mutex_);
+    // // SHARED_LOCK(mutex_);
     // Get the number of trees per iteration (for multiclass scenario we output multiple sparse matrices)
     int num_matrices = boosting_->NumModelPerIteration();
     bool is_indptr_int32 = false;
@@ -586,7 +593,7 @@ class Booster {
                         const Config& config,
                         int64_t* out_len, void** out_col_ptr, int col_ptr_type,
                         int32_t** out_indices, void** out_data, int data_type) const {
-    SHARED_LOCK(mutex_);
+    // // SHARED_LOCK(mutex_);
     // Get the number of trees per iteration (for multiclass scenario we output multiple sparse matrices)
     int num_matrices = boosting_->NumModelPerIteration();
     auto predictor = CreatePredictor(start_iteration, num_iteration, predict_type, ncol, config);
@@ -693,7 +700,7 @@ class Booster {
   void Predict(int start_iteration, int num_iteration, int predict_type, const char* data_filename,
                int data_has_header, const Config& config,
                const char* result_filename) const {
-    SHARED_LOCK(mutex_)
+    // SHARED_LOCK(mutex_)
     bool is_predict_leaf = false;
     bool is_raw_score = false;
     bool predict_contrib = false;
@@ -719,55 +726,55 @@ class Booster {
   void SaveModelToFile(int start_iteration, int num_iteration, int feature_importance_type, const char* filename) const {
     boosting_->SaveModelToFile(start_iteration, num_iteration, feature_importance_type, filename);
   }
-
+*/
   void LoadModelFromString(const char* model_str) {
     size_t len = std::strlen(model_str);
     boosting_->LoadModelFromString(model_str, len);
   }
 
-  std::string SaveModelToString(int start_iteration, int num_iteration,
+ /* std::string SaveModelToString(int start_iteration, int num_iteration,
                                 int feature_importance_type) const {
     return boosting_->SaveModelToString(start_iteration,
                                         num_iteration, feature_importance_type);
-  }
+  }*/
 
-  std::string DumpModel(int start_iteration, int num_iteration,
+  /*std::string DumpModel(int start_iteration, int num_iteration,
                         int feature_importance_type) const {
     return boosting_->DumpModel(start_iteration, num_iteration,
                                 feature_importance_type);
-  }
+  }*/
 
   std::vector<double> FeatureImportance(int num_iteration, int importance_type) const {
     return boosting_->FeatureImportance(num_iteration, importance_type);
   }
 
   double UpperBoundValue() const {
-    SHARED_LOCK(mutex_)
+    // SHARED_LOCK(mutex_)
     return boosting_->GetUpperBoundValue();
   }
 
   double LowerBoundValue() const {
-    SHARED_LOCK(mutex_)
+    // SHARED_LOCK(mutex_)
     return boosting_->GetLowerBoundValue();
   }
 
   double GetLeafValue(int tree_idx, int leaf_idx) const {
-    SHARED_LOCK(mutex_)
+    // SHARED_LOCK(mutex_)
     return dynamic_cast<GBDTBase*>(boosting_.get())->GetLeafValue(tree_idx, leaf_idx);
   }
 
   void SetLeafValue(int tree_idx, int leaf_idx, double val) {
-    UNIQUE_LOCK(mutex_)
+    // UNIQUE_LOCK(mutex_)
     dynamic_cast<GBDTBase*>(boosting_.get())->SetLeafValue(tree_idx, leaf_idx, val);
   }
 
   void ShuffleModels(int start_iter, int end_iter) {
-    UNIQUE_LOCK(mutex_)
+    // UNIQUE_LOCK(mutex_)
     boosting_->ShuffleModels(start_iter, end_iter);
   }
 
   int GetEvalCounts() const {
-    SHARED_LOCK(mutex_)
+    // SHARED_LOCK(mutex_)
     int ret = 0;
     for (const auto& metric : train_metric_) {
       ret += static_cast<int>(metric->GetName().size());
@@ -776,7 +783,7 @@ class Booster {
   }
 
   int GetEvalNames(char** out_strs, const int len, const size_t buffer_len, size_t *out_buffer_len) const {
-    SHARED_LOCK(mutex_)
+    // SHARED_LOCK(mutex_)
     *out_buffer_len = 0;
     int idx = 0;
     for (const auto& metric : train_metric_) {
@@ -793,7 +800,7 @@ class Booster {
   }
 
   int GetFeatureNames(char** out_strs, const int len, const size_t buffer_len, size_t *out_buffer_len) const {
-    SHARED_LOCK(mutex_)
+    // SHARED_LOCK(mutex_)
     *out_buffer_len = 0;
     int idx = 0;
     for (const auto& name : boosting_->FeatureNames()) {
@@ -812,7 +819,7 @@ class Booster {
  private:
   const Dataset* train_data_;
   std::unique_ptr<Boosting> boosting_;
-  std::unique_ptr<SingleRowPredictor> single_row_predictor_[PREDICTOR_TYPES];
+  //std::unique_ptr<SingleRowPredictor> single_row_predictor_[PREDICTOR_TYPES];
 
   /*! \brief All configs */
   Config config_;
@@ -823,7 +830,7 @@ class Booster {
   /*! \brief Training objective function */
   std::unique_ptr<ObjectiveFunction> objective_fun_;
   /*! \brief mutex for threading safe call */
-  mutable yamc::alternate::shared_mutex mutex_;
+  //mutable yamc::alternate::shared_mutex mutex_;
 };
 
 }  // namespace LightGBM
@@ -842,7 +849,7 @@ using LightGBM::DatasetLoader;
 using LightGBM::kZeroThreshold;
 using LightGBM::LGBM_APIHandleException;
 using LightGBM::Log;
-using LightGBM::Network;
+//using LightGBM::Network;
 using LightGBM::Random;
 using LightGBM::ReduceScatterFunction;
 
@@ -893,6 +900,7 @@ int LGBM_RegisterLogCallback(void (*callback)(const char*)) {
   API_END();
 }
 
+/*
 int LGBM_DatasetCreateFromFile(const char* filename,
                                const char* parameters,
                                const DatasetHandle reference,
@@ -917,7 +925,7 @@ int LGBM_DatasetCreateFromFile(const char* filename,
   }
   API_END();
 }
-
+*/
 
 int LGBM_DatasetCreateFromSampledColumn(double** sample_data,
                                         int** sample_indices,
@@ -940,7 +948,6 @@ int LGBM_DatasetCreateFromSampledColumn(double** sample_data,
                                         static_cast<data_size_t>(num_total_row));
   API_END();
 }
-
 
 int LGBM_DatasetCreateByReference(const DatasetHandle reference,
                                   int64_t num_total_row,
@@ -1081,7 +1088,7 @@ int LGBM_DatasetCreateFromMats(int32_t nmat,
 
       auto row = get_row_fun[j](static_cast<int>(idx - offset));
       for (size_t k = 0; k < row.size(); ++k) {
-        if (std::fabs(row[k]) > kZeroThreshold || std::isnan(row[k])) {
+        if (std::fabs(row[k]) > kZeroThreshold || !!__isnan(row[k])) {
           sample_values[k].emplace_back(row[k]);
           sample_idx[k].emplace_back(static_cast<int>(i));
         }
@@ -1160,7 +1167,7 @@ int LGBM_DatasetCreateFromCSR(const void* indptr,
       auto row = get_row_fun(static_cast<int>(idx));
       for (std::pair<int, double>& inner_data : row) {
         CHECK_LT(inner_data.first, num_col);
-        if (std::fabs(inner_data.second) > kZeroThreshold || std::isnan(inner_data.second)) {
+        if (std::fabs(inner_data.second) > kZeroThreshold || !!__isnan(inner_data.second)) {
           sample_values[inner_data.first].emplace_back(inner_data.second);
           sample_idx[inner_data.first].emplace_back(static_cast<int>(i));
         }
@@ -1231,7 +1238,7 @@ int LGBM_DatasetCreateFromCSRFunc(void* get_row_funptr,
       get_row_fun(static_cast<int>(idx), buffer);
       for (std::pair<int, double>& inner_data : buffer) {
         CHECK_LT(inner_data.first, num_col);
-        if (std::fabs(inner_data.second) > kZeroThreshold || std::isnan(inner_data.second)) {
+        if (std::fabs(inner_data.second) > kZeroThreshold || !!__isnan(inner_data.second)) {
           sample_values[inner_data.first].emplace_back(inner_data.second);
           sample_idx[inner_data.first].emplace_back(static_cast<int>(i));
         }
@@ -1305,7 +1312,7 @@ int LGBM_DatasetCreateFromCSC(const void* col_ptr,
       CSC_RowIterator col_it(col_ptr, col_ptr_type, indices, data, data_type, ncol_ptr, nelem, i);
       for (int j = 0; j < sample_cnt; j++) {
         auto val = col_it.Get(sample_indices[j]);
-        if (std::fabs(val) > kZeroThreshold || std::isnan(val)) {
+        if (std::fabs(val) > kZeroThreshold || !!__isnan(val)) {
           sample_values[i].emplace_back(val);
           sample_idx[i].emplace_back(j);
         }
@@ -1431,13 +1438,14 @@ int LGBM_DatasetFree(DatasetHandle handle) {
   API_END();
 }
 
-int LGBM_DatasetSaveBinary(DatasetHandle handle,
+/*int LGBM_DatasetSaveBinary(DatasetHandle handle,
                            const char* filename) {
   API_BEGIN();
   auto dataset = reinterpret_cast<Dataset*>(handle);
   dataset->SaveBinaryFile(filename);
   API_END();
 }
+
 
 int LGBM_DatasetDumpText(DatasetHandle handle,
                          const char* filename) {
@@ -1446,6 +1454,7 @@ int LGBM_DatasetDumpText(DatasetHandle handle,
   dataset->DumpTextFile(filename);
   API_END();
 }
+
 
 int LGBM_DatasetSetField(DatasetHandle handle,
                          const char* field_name,
@@ -1465,7 +1474,7 @@ int LGBM_DatasetSetField(DatasetHandle handle,
   if (!is_success) { Log::Fatal("Input data type error or field not found"); }
   API_END();
 }
-
+*/
 int LGBM_DatasetGetField(DatasetHandle handle,
                          const char* field_name,
                          int* out_len,
@@ -1536,7 +1545,7 @@ int LGBM_BoosterCreate(const DatasetHandle train_data,
   API_END();
 }
 
-int LGBM_BoosterCreateFromModelfile(
+/*int LGBM_BoosterCreateFromModelfile(
   const char* filename,
   int* out_num_iterations,
   BoosterHandle* out) {
@@ -1545,7 +1554,7 @@ int LGBM_BoosterCreateFromModelfile(
   *out_num_iterations = ret->GetBoosting()->GetCurrentIteration();
   *out = ret.release();
   API_END();
-}
+}*/
 
 int LGBM_BoosterLoadModelFromString(
   const char* model_str,
@@ -1567,7 +1576,7 @@ int LGBM_BoosterFree(BoosterHandle handle) {
   delete reinterpret_cast<Booster*>(handle);
   API_END();
 }
-
+/*
 int LGBM_BoosterShuffleModels(BoosterHandle handle, int start_iter, int end_iter) {
   API_BEGIN();
   Booster* ref_booster = reinterpret_cast<Booster*>(handle);
@@ -1744,6 +1753,7 @@ int LGBM_BoosterGetEval(BoosterHandle handle,
   API_END();
 }
 
+
 int LGBM_BoosterGetNumPredict(BoosterHandle handle,
                               int data_idx,
                               int64_t* out_len) {
@@ -1796,6 +1806,7 @@ int LGBM_BoosterCalcNumPredict(BoosterHandle handle,
     num_iteration, predict_type == C_API_PREDICT_LEAF_INDEX, predict_type == C_API_PREDICT_CONTRIB);
   API_END();
 }
+*/
 
 /*!
  * \brief Object to store resources meant for single-row Fast Predict methods.
@@ -1807,7 +1818,7 @@ int LGBM_BoosterCalcNumPredict(BoosterHandle handle,
  * address all the time. One just replaces the feature values at that address
  * and scores again with the *Fast* methods.
  */
-struct FastConfig {
+/*struct FastConfig {
   FastConfig(Booster *const booster_ptr,
              const char *parameter,
              const int predict_type_,
@@ -1828,6 +1839,7 @@ int LGBM_FastConfigFree(FastConfigHandle fastConfig) {
   delete reinterpret_cast<FastConfig*>(fastConfig);
   API_END();
 }
+
 
 int LGBM_BoosterPredictForCSR(BoosterHandle handle,
                               const void* indptr,
@@ -1916,7 +1928,7 @@ int LGBM_BoosterPredictSparseOutput(BoosterHandle handle,
       const int tid = omp_get_thread_num();
       for (int j = 0; j < ncol; ++j) {
         auto val = iterators[tid][j].Get(static_cast<int>(i));
-        if (std::fabs(val) > kZeroThreshold || std::isnan(val)) {
+        if (std::fabs(val) > kZeroThreshold || !!__isnan(val)) {
           one_row.emplace_back(j, val);
         }
       }
@@ -2072,7 +2084,7 @@ int LGBM_BoosterPredictForCSC(BoosterHandle handle,
         const int tid = omp_get_thread_num();
         for (int j = 0; j < ncol; ++j) {
           auto val = iterators[tid][j].Get(i);
-          if (std::fabs(val) > kZeroThreshold || std::isnan(val)) {
+          if (std::fabs(val) > kZeroThreshold || !!__isnan(val)) {
             one_row.emplace_back(j, val);
           }
         }
@@ -2330,9 +2342,10 @@ int LGBM_NetworkInitWithFunctions(int num_machines, int rank,
   API_END();
 }
 
+
 // ---- start of some help functions
 
-
+*/
 template<typename T>
 std::function<std::vector<double>(int row_idx)>
 RowFunctionFromDenseMatric_helper(const void* data, int num_row, int num_col, int is_row_major) {
@@ -2377,7 +2390,7 @@ RowPairFunctionFromDenseMatric(const void* data, int num_row, int num_col, int d
       std::vector<std::pair<int, double>> ret;
       ret.reserve(raw_values.size());
       for (int i = 0; i < static_cast<int>(raw_values.size()); ++i) {
-        if (std::fabs(raw_values[i]) > kZeroThreshold || std::isnan(raw_values[i])) {
+        if (std::fabs(raw_values[i]) > kZeroThreshold || !!__isnan(raw_values[i])) {
           ret.emplace_back(i, raw_values[i]);
         }
       }
@@ -2391,12 +2404,14 @@ RowPairFunctionFromDenseMatric(const void* data, int num_row, int num_col, int d
 std::function<std::vector<std::pair<int, double>>(int row_idx)>
 RowPairFunctionFromDenseRows(const void** data, int num_col, int data_type) {
   return [=](int row_idx) {
-    auto inner_function = RowFunctionFromDenseMatric(data[row_idx], 1, num_col, data_type, /* is_row_major */ true);
+    auto inner_function = RowFunctionFromDenseMatric(data[row_idx], 1, num_col, data_type, 
+    // is_row_major 
+    true);
     auto raw_values = inner_function(0);
     std::vector<std::pair<int, double>> ret;
     ret.reserve(raw_values.size());
     for (int i = 0; i < static_cast<int>(raw_values.size()); ++i) {
-      if (std::fabs(raw_values[i]) > kZeroThreshold || std::isnan(raw_values[i])) {
+      if (std::fabs(raw_values[i]) > kZeroThreshold || !!__isnan(raw_values[i])) {
         ret.emplace_back(i, raw_values[i]);
       }
     }

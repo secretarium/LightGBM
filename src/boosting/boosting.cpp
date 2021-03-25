@@ -11,14 +11,14 @@
 
 namespace LightGBM {
 
-std::string GetBoostingTypeFromModelFile(const char* filename) {
+/*std::string GetBoostingTypeFromModelFile(const char* filename) {
   TextReader<size_t> model_reader(filename, true);
   std::string type = model_reader.first_line();
   return type;
 }
 
 bool Boosting::LoadFileToBoosting(Boosting* boosting, const char* filename) {
-  auto start_time = std::chrono::steady_clock::now();
+  //auto start_time = std::chrono::steady_clock::now();
   if (boosting != nullptr) {
     TextReader<size_t> model_reader(filename, true);
     size_t buffer_len = 0;
@@ -30,7 +30,8 @@ bool Boosting::LoadFileToBoosting(Boosting* boosting, const char* filename) {
   std::chrono::duration<double, std::milli> delta = (std::chrono::steady_clock::now() - start_time);
   Log::Debug("Time for loading model: %f seconds", 1e-3*delta);
   return true;
-}
+}*/
+
 
 Boosting* Boosting::CreateBoosting(const std::string& type, const char* filename) {
   if (filename == nullptr || filename[0] == '\0') {
@@ -45,7 +46,7 @@ Boosting* Boosting::CreateBoosting(const std::string& type, const char* filename
     } else {
       return nullptr;
     }
-  } else {
+  } /*else {
     std::unique_ptr<Boosting> ret;
     if (GetBoostingTypeFromModelFile(filename) == std::string("tree")) {
       if (type == std::string("gbdt")) {
@@ -64,7 +65,9 @@ Boosting* Boosting::CreateBoosting(const std::string& type, const char* filename
       Log::Fatal("Unknown model format or submodel type in model file %s", filename);
     }
     return ret.release();
-  }
+  }*/
+  Log::Fatal("enclaves dont support files");
+  return nullptr;
 }
 
 }  // namespace LightGBM

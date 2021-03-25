@@ -2,9 +2,14 @@
  * Copyright (c) 2016 Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See LICENSE file in the project root for license information.
  */
+#pragma warning( push )
+#pragma warning(disable : 4172)
+#include <vector>
+#pragma warning( pop )
+
 #include "serial_tree_learner.h"
 
-#include <LightGBM/network.h>
+//#include <LightGBM/network.h>
 #include <LightGBM/objective_function.h>
 #include <LightGBM/utils/array_args.h>
 #include <LightGBM/utils/common.h>
@@ -155,7 +160,8 @@ void SerialTreeLearner::ResetConfig(const Config* config) {
   constraints_.reset(LeafConstraintsBase::Create(config_, config_->num_leaves, train_data_->num_features()));
 }
 
-Tree* SerialTreeLearner::Train(const score_t* gradients, const score_t *hessians, bool /*is_first_tree*/) {
+/*Tree* SerialTreeLearner::Train(const score_t* gradients, const score_t *hessians, bool //is_first_tree
+) {
   Common::FunctionTimer fun_timer("SerialTreeLearner::Train", global_timer);
   gradients_ = gradients;
   hessians_ = hessians;
@@ -206,9 +212,9 @@ Tree* SerialTreeLearner::Train(const score_t* gradients, const score_t *hessians
 
   Log::Debug("Trained a tree with leaves = %d and max_depth = %d", tree->num_leaves(), cur_depth);
   return tree.release();
-}
+}*/
 
-Tree* SerialTreeLearner::FitByExistingTree(const Tree* old_tree, const score_t* gradients, const score_t *hessians) const {
+/*Tree* SerialTreeLearner::FitByExistingTree(const Tree* old_tree, const score_t* gradients, const score_t *hessians) const {
   auto tree = std::unique_ptr<Tree>(new Tree(*old_tree));
   CHECK_GE(data_partition_->num_leaves(), tree->num_leaves());
   OMP_INIT_EX();
@@ -277,7 +283,7 @@ void SerialTreeLearner::BeforeTrain() {
   }
 
   larger_leaf_splits_->Init();
-}
+}*/
 
 bool SerialTreeLearner::BeforeFindBestSplit(const Tree* tree, int left_leaf, int right_leaf) {
   Common::FunctionTimer fun_timer("SerialTreeLearner::BeforeFindBestSplit", global_timer);
@@ -681,7 +687,7 @@ void SerialTreeLearner::SplitInner(Tree* tree, int best_leaf, int* left_leaf,
   }
 }
 
-void SerialTreeLearner::RenewTreeOutput(Tree* tree, const ObjectiveFunction* obj, std::function<double(const label_t*, int)> residual_getter,
+/*void SerialTreeLearner::RenewTreeOutput(Tree* tree, const ObjectiveFunction* obj, std::function<double(const label_t*, int)> residual_getter,
                                         data_size_t total_num_data, const data_size_t* bag_indices, data_size_t bag_cnt) const {
   if (obj != nullptr && obj->IsRenewTreeOutput()) {
     CHECK_LE(tree->num_leaves(), data_partition_->num_leaves());
@@ -691,7 +697,7 @@ void SerialTreeLearner::RenewTreeOutput(Tree* tree, const ObjectiveFunction* obj
       bag_mapper = bag_indices;
     }
     std::vector<int> n_nozeroworker_perleaf(tree->num_leaves(), 1);
-    int num_machines = Network::num_machines();
+    int num_machines = 1; //Network::num_machines();
     #pragma omp parallel for schedule(static)
     for (int i = 0; i < tree->num_leaves(); ++i) {
       const double output = static_cast<double>(tree->LeafOutput(i));
@@ -719,7 +725,7 @@ void SerialTreeLearner::RenewTreeOutput(Tree* tree, const ObjectiveFunction* obj
       }
     }
   }
-}
+}*/
 
 void SerialTreeLearner::ComputeBestSplitForFeature(
     FeatureHistogram* histogram_array_, int feature_index, int real_fidx,

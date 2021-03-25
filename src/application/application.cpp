@@ -8,7 +8,7 @@
 #include <LightGBM/dataset.h>
 #include <LightGBM/dataset_loader.h>
 #include <LightGBM/metric.h>
-#include <LightGBM/network.h>
+//#include <LightGBM/network.h>
 #include <LightGBM/objective_function.h>
 #include <LightGBM/prediction_early_stop.h>
 #include <LightGBM/cuda/vector_cudahost.h>
@@ -21,7 +21,7 @@
 #include <cstdio>
 #include <ctime>
 #include <fstream>
-#include <sstream>
+#include <secretarium/libcpp/sstream>
 #include <utility>
 
 #include "predictor.hpp"
@@ -107,15 +107,16 @@ void Application::LoadData() {
   if (config_.is_data_based_parallel) {
     // load data for distributed training
     train_data_.reset(dataset_loader.LoadFromFile(config_.data.c_str(),
-                                                  Network::rank(), Network::num_machines()));
+                                                  Network::rank(), 1 //Network::num_machines()
+                                                  ));
   } else {
     // load data for single machine
     train_data_.reset(dataset_loader.LoadFromFile(config_.data.c_str(), 0, 1));
   }
   // need save binary file
-  if (config_.save_binary) {
+  /*if (config_.save_binary) {
     train_data_->SaveBinaryFile(nullptr);
-  }
+  }*/
   // create training metric
   if (config_.is_provide_training_metric) {
     for (auto metric_type : config_.metric) {
@@ -140,9 +141,9 @@ void Application::LoadData() {
           train_data_.get()));
       valid_datas_.push_back(std::move(new_dataset));
       // need save binary file
-      if (config_.save_binary) {
+      /*if (config_.save_binary) {
         valid_datas_.back()->SaveBinaryFile(nullptr);
-      }
+      }*/
 
       // add metric for validation data
       valid_metrics_.emplace_back();
@@ -163,7 +164,7 @@ void Application::LoadData() {
   Log::Info("Finished loading data in %f seconds",
             std::chrono::duration<double, std::milli>(end_time - start_time) * 1e-3);
 }
-
+/*
 void Application::InitTrain() {
   if (config_.is_parallel) {
     // need init network
@@ -215,10 +216,10 @@ void Application::Train() {
     boosting_->SaveModelToIfElse(-1, config_.convert_model.c_str());
   }
   Log::Info("Finished training");
-}
+}*/
 
 void Application::Predict() {
-  if (config_.task == TaskType::KRefitTree) {
+  /*if (config_.task == TaskType::KRefitTree) {
     // create predictor
     Predictor predictor(boosting_.get(), 0, -1, false, true, false, false, 1, 1);
     predictor.Predict(config_.data.c_str(), config_.output_result.c_str(), config_.header, config_.predict_disable_shape_check);
@@ -244,7 +245,7 @@ void Application::Predict() {
     boosting_->SaveModelToFile(0, -1, config_.saved_feature_importance_type,
                                config_.output_model.c_str());
     Log::Info("Finished RefitTree");
-  } else {
+  } else*/ {
     // create predictor
     Predictor predictor(boosting_.get(), config_.start_iteration_predict, config_.num_iteration_predict, config_.predict_raw_score,
                         config_.predict_leaf_index, config_.predict_contrib,
@@ -261,12 +262,12 @@ void Application::InitPredict() {
     Boosting::CreateBoosting("gbdt", config_.input_model.c_str()));
   Log::Info("Finished initializing prediction, total used %d iterations", boosting_->GetCurrentIteration());
 }
-
+/*
 void Application::ConvertModel() {
   boosting_.reset(
     Boosting::CreateBoosting(config_.boosting, config_.input_model.c_str()));
   boosting_->SaveModelToIfElse(-1, config_.convert_model.c_str());
 }
-
+*/
 
 }  // namespace LightGBM

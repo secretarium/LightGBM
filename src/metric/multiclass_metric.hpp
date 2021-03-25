@@ -9,7 +9,10 @@
 #include <LightGBM/utils/log.h>
 
 #include <string>
+#pragma warning(push)
+#pragma warning(disable: 4244)
 #include <cmath>
+#pragma warning(pop)
 #include <utility>
 #include <vector>
 

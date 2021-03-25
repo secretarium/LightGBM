@@ -22,7 +22,10 @@
 
 #include <LightGBM/utils/log.h>
 
+#pragma warning(push)
+#pragma warning(disable: 4244)
 #include <cmath>
+#pragma warning(pop)
 #include <cstdio>
 #include <cstdlib>
 #include <limits>

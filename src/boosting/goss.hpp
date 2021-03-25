@@ -56,7 +56,7 @@ class GOSS: public GBDT {
     ResetGoss();
   }
 
-  bool TrainOneIter(const score_t* gradients, const score_t* hessians) override {
+  /*bool TrainOneIter(const score_t* gradients, const score_t* hessians) override {
     if (gradients != nullptr) {
       // use customized objective function
       CHECK(hessians != nullptr && objective_function_ == nullptr);
@@ -71,7 +71,7 @@ class GOSS: public GBDT {
       CHECK(hessians == nullptr);
       return GBDT::TrainOneIter(nullptr, nullptr);
     }
-  }
+  }*/
 
   void ResetGoss() {
     CHECK_LE(config_->top_rate + config_->other_rate, 1.0f);

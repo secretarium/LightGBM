@@ -100,7 +100,7 @@ class RF : public GBDT {
       GetGradients(tmp_scores.data(), gradients_.data(), hessians_.data());
   }
 
-  bool TrainOneIter(const score_t* gradients, const score_t* hessians) override {
+  /*bool TrainOneIter(const score_t* gradients, const score_t* hessians) override {
     // bagging logic
     Bagging(iter_);
     CHECK_EQ(gradients, nullptr);
@@ -183,7 +183,7 @@ class RF : public GBDT {
       models_.pop_back();
     }
     --iter_;
-  }
+  }*/
 
   void MultiplyScore(const int cur_tree_id, double val) {
     train_score_updater_->MultiplyScore(val, cur_tree_id);

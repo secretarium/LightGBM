@@ -6,7 +6,7 @@
 #include "cuda_tree_learner.h"
 
 #include <LightGBM/bin.h>
-#include <LightGBM/network.h>
+//#include <LightGBM/network.h>
 #include <LightGBM/cuda/cuda_utils.h>
 #include <LightGBM/utils/array_args.h>
 #include <LightGBM/utils/common.h>

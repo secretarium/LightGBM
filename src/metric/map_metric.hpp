@@ -12,7 +12,7 @@
 
 #include <string>
 #include <algorithm>
-#include <sstream>
+#include <secretarium/libcpp/sstream>
 #include <vector>
 
 namespace LightGBM {

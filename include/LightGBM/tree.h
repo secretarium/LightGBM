@@ -238,7 +238,7 @@ class Tree {
   }
 
   /*! \brief Serialize this object to string*/
-  std::string ToString() const;
+  //std::string ToString() const;
 
   /*! \brief Serialize this object to json*/
   std::string ToJSON() const;
@@ -327,11 +327,11 @@ class Tree {
 
   inline int NumericalDecision(double fval, int node) const {
     uint8_t missing_type = GetMissingType(decision_type_[node]);
-    if (std::isnan(fval) && missing_type != MissingType::NaN) {
+    if (!!__isnan(fval) && missing_type != MissingType::NaN) {
       fval = 0.0f;
     }
     if ((missing_type == MissingType::Zero && IsZero(fval))
-        || (missing_type == MissingType::NaN && std::isnan(fval))) {
+        || (missing_type == MissingType::NaN && !!__isnan(fval))) {
       if (GetDecisionType(decision_type_[node], kDefaultLeftMask)) {
         return left_child_[node];
       } else {
@@ -367,7 +367,7 @@ class Tree {
     int int_fval = static_cast<int>(fval);
     if (int_fval < 0) {
       return right_child_[node];;
-    } else if (std::isnan(fval)) {
+    } else if (!!__isnan(fval)) {
       // NaN is always in the right
       if (missing_type == MissingType::NaN) {
         return right_child_[node];
@@ -557,10 +557,10 @@ inline void Tree::Split(int leaf, int feature, int real_feature,
   internal_weight_[new_node_idx] = leaf_weight_[leaf];
   internal_value_[new_node_idx] = leaf_value_[leaf];
   internal_count_[new_node_idx] = left_cnt + right_cnt;
-  leaf_value_[leaf] = std::isnan(left_value) ? 0.0f : left_value;
+  leaf_value_[leaf] = !!__isnan(left_value) ? 0.0f : left_value;
   leaf_weight_[leaf] = left_weight;
   leaf_count_[leaf] = left_cnt;
-  leaf_value_[num_leaves_] = std::isnan(right_value) ? 0.0f : right_value;
+  leaf_value_[num_leaves_] = !!__isnan(right_value) ? 0.0f : right_value;
   leaf_weight_[num_leaves_] = right_weight;
   leaf_count_[num_leaves_] = right_cnt;
   // update leaf depth
@@ -581,7 +581,7 @@ inline double Tree::Predict(const double* feature_values) const {
       for (size_t i = 0; i < leaf_features_[leaf].size(); ++i) {
         int feat_raw = leaf_features_[leaf][i];
         double feat_val = feature_values[feat_raw];
-        if (std::isnan(feat_val)) {
+        if (!!__isnan(feat_val)) {
           nan_found = true;
           break;
         } else {
@@ -613,7 +613,7 @@ inline double Tree::PredictByMap(const std::unordered_map<int, double>& feature_
       auto val_it = feature_values.find(feat);
       if (val_it != feature_values.end()) {
         double feat_val = val_it->second;
-        if (std::isnan(feat_val)) {
+        if (!!__isnan(feat_val)) {
           nan_found = true;
           break;
         } else {

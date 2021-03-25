@@ -4,7 +4,7 @@
  */
 #include "linear_tree_learner.h"
 
-#include <Eigen/Dense>
+//#include <Eigen/Dense>
 
 #include <algorithm>
 
@@ -25,7 +25,7 @@ void LinearTreeLearner::InitLinear(const Dataset* train_data, const int max_leav
     if (bin_mapper->bin_type() == BinType::NumericalBin) {
       const float* feat_ptr = train_data_->raw_index(feat);
       for (int i = 0; i < train_data->num_data(); ++i) {
-        if (std::isnan(feat_ptr[i])) {
+        if (!!__isnan(feat_ptr[i])) {
           contains_nan_[feat] = 1;
           break;
         }
@@ -59,7 +59,7 @@ void LinearTreeLearner::InitLinear(const Dataset* train_data, const int max_leav
   }
 }
 
-Tree* LinearTreeLearner::Train(const score_t* gradients, const score_t *hessians, bool is_first_tree) {
+/*Tree* LinearTreeLearner::Train(const score_t* gradients, const score_t *hessians, bool is_first_tree) {
   Common::FunctionTimer fun_timer("SerialTreeLearner::Train", global_timer);
   gradients_ = gradients;
   hessians_ = hessians;
@@ -147,13 +147,13 @@ Tree* LinearTreeLearner::FitByExistingTree(const Tree* old_tree, const score_t* 
     CalculateLinear<false>(tree, true, gradients, hessians, false);
   }
   return tree;
-}
+}*/
 
-Tree* LinearTreeLearner::FitByExistingTree(const Tree* old_tree, const std::vector<int>& leaf_pred,
+/*Tree* LinearTreeLearner::FitByExistingTree(const Tree* old_tree, const std::vector<int>& leaf_pred,
                                            const score_t* gradients, const score_t *hessians) const {
   data_partition_->ResetByLeafPred(leaf_pred, old_tree->num_leaves());
   return LinearTreeLearner::FitByExistingTree(old_tree, gradients, hessians);
-}
+}*/
 
 void LinearTreeLearner::GetLeafMap(Tree* tree) const {
   std::fill(leaf_map_.begin(), leaf_map_.end(), -1);
@@ -169,7 +169,7 @@ void LinearTreeLearner::GetLeafMap(Tree* tree) const {
 }
 
 
-template<bool HAS_NAN>
+/*template<bool HAS_NAN>
 void LinearTreeLearner::CalculateLinear(Tree* tree, bool is_refit, const score_t* gradients, const score_t* hessians, bool is_first_tree) const {
   tree->SetIsLinear(true);
   int num_leaves = tree->num_leaves();
@@ -261,7 +261,7 @@ void LinearTreeLearner::CalculateLinear(Tree* tree, bool is_refit, const score_t
       for (int feat = 0; feat < num_feat; ++feat) {
         if (HAS_NAN) {
           float val = raw_data_ptr[leaf_num][feat][i];
-          if (std::isnan(val)) {
+          if (!!__isnan(val)) {
             nan_found = true;
             break;
           }
@@ -378,4 +378,6 @@ void LinearTreeLearner::CalculateLinear(Tree* tree, bool is_refit, const score_t
     }
   }
 }
+*/
+
 }  // namespace LightGBM

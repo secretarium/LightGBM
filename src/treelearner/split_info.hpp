@@ -8,7 +8,10 @@
 #include <LightGBM/meta.h>
 
 #include <limits>
+#pragma warning(push)
+#pragma warning(disable: 4244)
 #include <cmath>
+#pragma warning(pop)
 #include <cstdint>
 #include <cstring>
 #include <functional>

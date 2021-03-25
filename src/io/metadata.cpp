@@ -20,14 +20,14 @@ Metadata::Metadata() {
   init_score_load_from_file_ = false;
 }
 
-void Metadata::Init(const char* data_filename) {
+/*void Metadata::Init(const char* data_filename) {
   data_filename_ = data_filename;
   // for lambdarank, it needs query data for partition data in distributed learning
   LoadQueryBoundaries();
   LoadWeights();
   LoadQueryWeights();
   LoadInitialScore();
-}
+}*/
 
 Metadata::~Metadata() {
 }
@@ -368,7 +368,7 @@ void Metadata::SetQuery(const data_size_t* query, data_size_t len) {
   query_load_from_file_ = false;
 }
 
-void Metadata::LoadWeights() {
+/*void Metadata::LoadWeights() {
   num_weights_ = 0;
   std::string weight_filename(data_filename_);
   // default weight file name
@@ -454,7 +454,7 @@ void Metadata::LoadQueryBoundaries() {
     query_boundaries_[i + 1] = query_boundaries_[i] + static_cast<data_size_t>(tmp_cnt);
   }
   query_load_from_file_ = true;
-}
+}*/
 
 void Metadata::LoadQueryWeights() {
   if (weights_.size() == 0 || query_boundaries_.size() == 0) {

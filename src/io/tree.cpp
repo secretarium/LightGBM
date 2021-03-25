@@ -10,7 +10,7 @@
 
 #include <functional>
 #include <iomanip>
-#include <sstream>
+#include <secretarium/libcpp/sstream>
 
 namespace LightGBM {
 
@@ -133,7 +133,7 @@ int Tree::SplitCategorical(int leaf, int feature, int real_feature, const uint32
     const float** data_ptr = feat_ptr[node].data();                           \
     for (size_t j = 0; j < leaf_features_inner_[node].size(); ++j) {          \
        float feat_val = data_ptr[j][(data_idx)];                              \
-       if (std::isnan(feat_val)) {                                            \
+       if (!!__isnan(feat_val)) {                                            \
           nan_found = true;                                                   \
           break;                                                              \
        }                                                                      \
@@ -333,7 +333,7 @@ double Tree::GetLowerBoundValue() const {
   return lower_bound;
 }
 
-std::string Tree::ToString() const {
+/*std::string Tree::ToString() const {
   std::stringstream str_buf;
   Common::C_stringstream(str_buf);
 
@@ -407,7 +407,7 @@ std::string Tree::ToString() const {
   str_buf << '\n';
 
   return str_buf.str();
-}
+}*/
 
 std::string Tree::ToJSON() const {
   std::stringstream str_buf;
@@ -496,15 +496,15 @@ std::string Tree::NumericalDecisionIfElse(int node) const {
     str_buf << "if (fval <= " << threshold_[node] << ") {";
   } else if (missing_type == MissingType::Zero) {
     if (default_left) {
-      str_buf << "if (fval <= " << threshold_[node] << " || Tree::IsZero(fval)" << " || std::isnan(fval)) {";
+      str_buf << "if (fval <= " << threshold_[node] << " || Tree::IsZero(fval)" << " || !!__isnan(fval)) {";
     } else {
-      str_buf << "if (fval <= " << threshold_[node] << " && !Tree::IsZero(fval)" << " && !std::isnan(fval)) {";
+      str_buf << "if (fval <= " << threshold_[node] << " && !Tree::IsZero(fval)" << " && !!!__isnan(fval)) {";
     }
   } else {
     if (default_left) {
-      str_buf << "if (fval <= " << threshold_[node] << " || std::isnan(fval)) {";
+      str_buf << "if (fval <= " << threshold_[node] << " || !!__isnan(fval)) {";
     } else {
-      str_buf << "if (fval <= " << threshold_[node] << " && !std::isnan(fval)) {";
+      str_buf << "if (fval <= " << threshold_[node] << " && !!!__isnan(fval)) {";
     }
   }
   return str_buf.str();
@@ -515,9 +515,9 @@ std::string Tree::CategoricalDecisionIfElse(int node) const {
   std::stringstream str_buf;
   Common::C_stringstream(str_buf);
   if (missing_type == MissingType::NaN) {
-    str_buf << "if (std::isnan(fval)) { int_fval = -1; } else { int_fval = static_cast<int>(fval); }";
+    str_buf << "if (!!__isnan(fval)) { int_fval = -1; } else { int_fval = static_cast<int>(fval); }";
   } else {
-    str_buf << "if (std::isnan(fval)) { int_fval = 0; } else { int_fval = static_cast<int>(fval); }";
+    str_buf << "if (!!__isnan(fval)) { int_fval = 0; } else { int_fval = static_cast<int>(fval); }";
   }
   int cat_idx = static_cast<int>(threshold_[node]);
   str_buf << "if (int_fval >= 0 && int_fval < 32 * (";

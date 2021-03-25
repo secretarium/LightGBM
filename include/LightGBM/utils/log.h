@@ -6,6 +6,7 @@
 #ifndef LIGHTGBM_UTILS_LOG_H_
 #define LIGHTGBM_UTILS_LOG_H_
 
+#include <libc/stdio.h>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
@@ -14,6 +15,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+
+#include <logger/common/logger.h>
 
 #ifdef LGB_R_BUILD
 #define R_NO_REMAP
@@ -112,7 +115,7 @@ class Log {
     char str_buf[1024];
     va_start(val, format);
 #ifdef _MSC_VER
-    vsprintf_s(str_buf, format, val);
+    vsprintf_s(str_buf, sizeof(str_buf), format, val);
 #else
     vsprintf(str_buf, format, val);
 #endif
@@ -120,13 +123,15 @@ class Log {
 
 // R code should write back to R's error stream,
 // otherwise to stderr
-#ifndef LGB_R_BUILD
+  CRITICAL("[LightGBM] [Fatal] {}", str_buf);
+  abort();
+/*#ifndef LGB_R_BUILD
     fprintf(stderr, "[LightGBM] [Fatal] %s\n", str_buf);
     fflush(stderr);
 #else
     Rf_error("[LightGBM] [Fatal] %s\n", str_buf);
 #endif
-    throw std::runtime_error(std::string(str_buf));
+    throw std::runtime_error(std::string(str_buf));*/
   }
 
  private:
@@ -137,10 +142,31 @@ class Log {
 // otherwise to stdout
 #ifndef LGB_R_BUILD
       if (GetLogCallBack() == nullptr) {
-        printf("[LightGBM] [%s] ", level_str);
+        switch(level)
+        {
+          case LogLevel::Fatal:
+            CRITICAL("[LightGBM] [{}] ", level_str);
+            abort();
+            break;
+          case LogLevel::Warning:
+            WARN("[LightGBM] [{}] ", level_str);
+            break;
+          case LogLevel::Info:
+            INFO("[LightGBM] [{}] ", level_str);
+            break;
+          case LogLevel::Debug:
+            DEBUG("[LightGBM] [{}] ", level_str);
+            break;
+          default:
+            CRITICAL("[LightGBM] [{}] default handler called! ", level_str);
+            abort();
+            break;
+        };
+
+        /*printf("[LightGBM] [%s] ", level_str);
         vprintf(format, val);
         printf("\n");
-        fflush(stdout);
+        fflush(stdout);*/
       } else {
         const size_t kBufSize = 512;
         char buf[kBufSize];

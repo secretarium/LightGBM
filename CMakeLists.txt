@@ -343,8 +343,80 @@ if(USE_CUDA)
 endif(USE_CUDA)
 )
 
-add_executable(lightgbm src/main.cpp src/application/application.cpp ${SOURCES})
-list(APPEND SOURCES "src/c_api.cpp")
+#add_executable(lightgbm src/main.cpp src/application/application.cpp ${SOURCES})
+set(SOURCES 
+  src/c_api.cpp 
+  src/boosting/boosting.cpp
+  src/boosting/dart.hpp
+  src/boosting/gbdt.cpp
+  src/boosting/gbdt.h
+  src/boosting/gbdt_model_text.cpp
+  src/boosting/gbdt_prediction.cpp
+  src/boosting/goss.hpp
+  src/boosting/prediction_early_stop.cpp
+  src/boosting/rf.hpp
+  src/boosting/score_updater.hpp
+  src/io/bin.cpp
+  src/io/config.cpp
+  src/io/config_auto.cpp
+  src/io/dataset.cpp
+  src/io/dataset_loader.cpp
+  src/io/dense_bin.hpp
+  #src/io/file_io.cpp
+  src/io/json11.cpp
+  src/io/metadata.cpp
+  src/io/multi_val_dense_bin.hpp
+  src/io/multi_val_sparse_bin.hpp
+  #src/io/parser.cpp
+  src/io/parser.hpp
+  src/io/sparse_bin.hpp
+  src/io/train_share_states.cpp
+  src/io/tree.cpp  
+  src/metric/binary_metric.hpp
+  src/metric/dcg_calculator.cpp
+  src/metric/map_metric.hpp
+  src/metric/metric.cpp
+  src/metric/multiclass_metric.hpp
+  src/metric/rank_metric.hpp
+  src/metric/regression_metric.hpp
+  src/metric/xentropy_metric.hpp
+  #src/network/ifaddrs_patch.cpp
+  #src/network/ifaddrs_patch.h
+  #src/network/linkers.h
+  #src/network/linkers_mpi.cpp
+  #src/network/linkers_socket.cpp
+  #src/network/linker_topo.cpp
+  #src/network/network.cpp
+  #src/network/socket_wrapper.hpp
+  src/objective/binary_objective.hpp
+  src/objective/multiclass_objective.hpp
+  src/objective/objective_function.cpp
+  src/objective/rank_objective.hpp
+  src/objective/regression_objective.hpp
+  src/objective/xentropy_objective.hpp
+  src/treelearner/col_sampler.hpp
+  #src/treelearner/cost_effective_gradient_boosting.hpp
+  #src/treelearner/cuda_kernel_launcher.cu
+  src/treelearner/cuda_kernel_launcher.h
+  #src/treelearner/cuda_tree_learner.cpp
+  src/treelearner/cuda_tree_learner.h
+  #src/treelearner/data_parallel_tree_learner.cpp
+  src/treelearner/data_partition.hpp
+  src/treelearner/feature_histogram.hpp
+  #src/treelearner/feature_parallel_tree_learner.cpp
+  #src/treelearner/gpu_tree_learner.cpp
+  src/treelearner/gpu_tree_learner.h
+  src/treelearner/leaf_splits.hpp
+  src/treelearner/linear_tree_learner.cpp
+  src/treelearner/linear_tree_learner.h
+  src/treelearner/monotone_constraints.hpp
+  src/treelearner/parallel_tree_learner.h
+  src/treelearner/serial_tree_learner.cpp
+  src/treelearner/serial_tree_learner.h
+  src/treelearner/split_info.hpp
+  src/treelearner/tree_learner.cpp
+  #src/treelearner/voting_parallel_tree_learner.cpp
+  )
 
 # Only build the R part of the library if building for
 # use with the R package
@@ -354,6 +426,24 @@ endif(__BUILD_FOR_R)
 
 if (BUILD_STATIC_LIB)
   add_library(_lightgbm STATIC ${SOURCES})
+
+  target_compile_definitions(_lightgbm PRIVATE ${ENCLAVE_DEFINES})
+  target_compile_options(_lightgbm PRIVATE ${ENCLAVE_COMPILE_OPTIONS})
+  set_property(TARGET _lightgbm PROPERTY COMPILE_PDB_NAME _lightgbm) 
+  target_link_options(_lightgbm PRIVATE ${ENCLAVE_LINK_OPTIONS})
+  target_include_directories(_lightgbm 
+    PUBLIC 
+      "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+      "$<INSTALL_INTERFACE:include/secretarium>"
+    PRIVATE 
+      ${ENCLAVE_LIBCXX_INCLUDES})
+  target_link_libraries(_lightgbm 
+    PRIVATE 
+      libc_enclave 
+      libcpp_enclave 
+      global_constants_enclave
+      logger_common
+      logger_enclave_lib)  
 else()
   add_library(_lightgbm SHARED ${SOURCES})
 endif(BUILD_STATIC_LIB)
@@ -483,7 +573,9 @@ if(BUILD_CPP_TEST)
   target_link_libraries(testlightgbm PRIVATE GTest::GTest)
 endif()
 
-install(TARGETS lightgbm _lightgbm
+install(TARGETS 
+          #lightgbm 
+          _lightgbm
         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
         ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

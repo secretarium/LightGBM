@@ -11,7 +11,10 @@
 
 #include <string>
 #include <algorithm>
+#pragma warning(push)
+#pragma warning(disable: 4244)
 #include <cmath>
+#pragma warning(pop)
 #include <cstring>
 #include <vector>
 

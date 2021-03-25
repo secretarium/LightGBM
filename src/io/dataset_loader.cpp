@@ -2,9 +2,12 @@
  * Copyright (c) 2016 Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See LICENSE file in the project root for license information.
  */
+
+#pragma warning(disable: 4172)
+
 #include <LightGBM/dataset_loader.h>
 
-#include <LightGBM/network.h>
+//#include <LightGBM/network.h>
 #include <LightGBM/utils/array_args.h>
 #include <LightGBM/utils/json11.h>
 #include <LightGBM/utils/log.h>
@@ -35,7 +38,7 @@ DatasetLoader::~DatasetLoader() {
 void DatasetLoader::SetHeader(const char* filename) {
   std::unordered_map<std::string, int> name2idx;
   std::string name_prefix("name:");
-  if (filename != nullptr) {
+  /*if (filename != nullptr) {
     TextReader<data_size_t> text_reader(filename, config_.header);
 
     // get column names
@@ -144,6 +147,7 @@ void DatasetLoader::SetHeader(const char* filename) {
       ignore_features_.emplace(group_idx_);
     }
   }
+  */
   if (config_.categorical_feature.size() > 0) {
     if (Common::StartsWith(config_.categorical_feature, name_prefix)) {
       std::string names = config_.categorical_feature.substr(name_prefix.size());
@@ -169,6 +173,7 @@ void DatasetLoader::SetHeader(const char* filename) {
   }
 }
 
+
 void CheckSampleSize(size_t sample_cnt, size_t num_data) {
   if (static_cast<double>(sample_cnt) / num_data < 0.2f &&
       sample_cnt < 100000) {
@@ -179,6 +184,7 @@ void CheckSampleSize(size_t sample_cnt, size_t num_data) {
   }
 }
 
+/*
 Dataset* DatasetLoader::LoadFromFile(const char* filename, int rank, int num_machines) {
   // don't support query id in data file when using distributed training
   if (num_machines > 1 && !config_.pre_partition) {
@@ -255,10 +261,10 @@ Dataset* DatasetLoader::LoadFromFile(const char* filename, int rank, int num_mac
 
   return dataset.release();
 }
+*/
 
 
-
-Dataset* DatasetLoader::LoadFromFileAlignWithOtherDataset(const char* filename, const Dataset* train_data) {
+/*Dataset* DatasetLoader::LoadFromFileAlignWithOtherDataset(const char* filename, const Dataset* train_data) {
   data_size_t num_global_data = 0;
   std::vector<data_size_t> used_data_indices;
   auto dataset = std::unique_ptr<Dataset>(new Dataset());
@@ -613,17 +619,16 @@ Dataset* DatasetLoader::LoadFromBinFile(const char* data_filename, const char* b
 
   dataset->is_finish_load_ = true;
   return dataset.release();
-}
-
+}*/
 
 Dataset* DatasetLoader::ConstructFromSampleData(double** sample_values,
                                                 int** sample_indices, int num_col, const int* num_per_col,
                                                 size_t total_sample_size, data_size_t num_data) {
   CheckSampleSize(total_sample_size, static_cast<size_t>(num_data));
   int num_total_features = num_col;
-  if (Network::num_machines() > 1) {
+  /*if (Network::num_machines() > 1) {
     num_total_features = Network::GlobalSyncUpByMax(num_total_features);
-  }
+  }*/
   std::vector<std::unique_ptr<BinMapper>> bin_mappers(num_total_features);
   // fill feature_names_ if not header
   if (feature_names_.empty()) {
@@ -644,7 +649,8 @@ Dataset* DatasetLoader::ConstructFromSampleData(double** sample_values,
 
   const data_size_t filter_cnt = static_cast<data_size_t>(
     static_cast<double>(config_.min_data_in_leaf * total_sample_size) / num_data);
-  if (Network::num_machines() == 1) {
+  //if (Network::num_machines() == 1) 
+  {
     // if only one machine, find bin locally
     OMP_INIT_EX();
     #pragma omp parallel for schedule(guided)
@@ -677,7 +683,9 @@ Dataset* DatasetLoader::ConstructFromSampleData(double** sample_values,
       OMP_LOOP_EX_END();
     }
     OMP_THROW_EX();
-  } else {
+  } 
+ /* else 
+  {
     // if have multi-machines, need to find bin distributed
     // different machines will find bin for different features
     int num_machines = Network::num_machines();
@@ -762,7 +770,8 @@ Dataset* DatasetLoader::ConstructFromSampleData(double** sample_values,
       bin_mappers[i]->CopyFrom(cp_ptr);
       cp_ptr += bin_mappers[i]->SizesInByte();
     }
-  }
+  }*/
+  
   auto dataset = std::unique_ptr<Dataset>(new Dataset(num_data));
   dataset->Construct(&bin_mappers, num_total_features, forced_bin_bounds, sample_indices, sample_values, num_per_col, num_col, total_sample_size, config_);
   if (dataset->has_raw()) {
@@ -771,7 +780,6 @@ Dataset* DatasetLoader::ConstructFromSampleData(double** sample_values,
   dataset->set_feature_names(feature_names_);
   return dataset.release();
 }
-
 
 // ---- private functions ----
 
@@ -838,6 +846,7 @@ void DatasetLoader::CheckDataset(const Dataset* dataset, bool is_load_from_binar
   }
 }
 
+/*
 std::vector<std::string> DatasetLoader::LoadTextDataToMemory(const char* filename, const Metadata& metadata,
                                                              int rank, int num_machines, int* num_global_data,
                                                              std::vector<data_size_t>* used_data_indices) {
@@ -885,6 +894,7 @@ std::vector<std::string> DatasetLoader::LoadTextDataToMemory(const char* filenam
   }
   return std::move(text_reader.Lines());
 }
+*/
 
 std::vector<std::string> DatasetLoader::SampleTextDataFromMemory(const std::vector<std::string>& data) {
   int sample_cnt = config_.bin_construct_sample_cnt;
@@ -900,6 +910,7 @@ std::vector<std::string> DatasetLoader::SampleTextDataFromMemory(const std::vect
   return out;
 }
 
+/*
 std::vector<std::string> DatasetLoader::SampleTextDataFromFile(const char* filename, const Metadata& metadata,
                                                                int rank, int num_machines, int* num_global_data,
                                                                std::vector<data_size_t>* used_data_indices) {
@@ -948,6 +959,7 @@ std::vector<std::string> DatasetLoader::SampleTextDataFromFile(const char* filen
   return out_data;
 }
 
+
 void DatasetLoader::ConstructBinMappersFromTextData(int rank, int num_machines,
                                                     const std::vector<std::string>& sample_data,
                                                     const Parser* parser, Dataset* dataset) {
@@ -965,7 +977,7 @@ void DatasetLoader::ConstructBinMappersFromTextData(int rank, int num_machines,
         sample_values.resize(inner_data.first + 1);
         sample_indices.resize(inner_data.first + 1);
       }
-      if (std::fabs(inner_data.second) > kZeroThreshold || std::isnan(inner_data.second)) {
+      if (std::fabs(inner_data.second) > kZeroThreshold || !!__isnan(inner_data.second)) {
         sample_values[inner_data.first].emplace_back(inner_data.second);
         sample_indices[inner_data.first].emplace_back(i);
       }
@@ -1134,6 +1146,7 @@ void DatasetLoader::ConstructBinMappersFromTextData(int rank, int num_machines,
   Log::Info("Construct bin mappers from text data time %.2f seconds",
             std::chrono::duration<double, std::milli>(t2 - t1) * 1e-3);
 }
+*/
 
 /*! \brief Extract local features from memory */
 void DatasetLoader::ExtractFeaturesFromMemory(std::vector<std::string>* text_data, const Parser* parser, Dataset* dataset) {
@@ -1257,7 +1270,7 @@ void DatasetLoader::ExtractFeaturesFromMemory(std::vector<std::string>* text_dat
 }
 
 /*! \brief Extract local features from file */
-void DatasetLoader::ExtractFeaturesFromFile(const char* filename, const Parser* parser,
+/*void DatasetLoader::ExtractFeaturesFromFile(const char* filename, const Parser* parser,
                                             const std::vector<data_size_t>& used_data_indices, Dataset* dataset) {
   std::vector<double> init_score;
   if (predict_fun_ != nullptr) {
@@ -1336,9 +1349,10 @@ void DatasetLoader::ExtractFeaturesFromFile(const char* filename, const Parser* 
     dataset->metadata_.SetInitScore(init_score.data(), dataset->num_data_ * num_class_);
   }
   dataset->FinishLoad();
-}
+}*/
 
 /*! \brief Check can load from binary file */
+/*
 std::string DatasetLoader::CheckCanLoadFromBin(const char* filename) {
   std::string bin_filename(filename);
   bin_filename.append(".bin");
@@ -1365,13 +1379,13 @@ std::string DatasetLoader::CheckCanLoadFromBin(const char* filename) {
     return std::string();
   }
 }
-
+*/
 
 
 std::vector<std::vector<double>> DatasetLoader::GetForcedBins(std::string forced_bins_path, int num_total_features,
                                                               const std::unordered_set<int>& categorical_features) {
   std::vector<std::vector<double>> forced_bins(num_total_features, std::vector<double>());
-  if (forced_bins_path != "") {
+  /*if (forced_bins_path != "") {
     std::ifstream forced_bins_stream(forced_bins_path.c_str());
     if (forced_bins_stream.fail()) {
       Log::Warning("Could not open %s. Will ignore.", forced_bins_path.c_str());
@@ -1400,8 +1414,9 @@ std::vector<std::vector<double>> DatasetLoader::GetForcedBins(std::string forced
         forced_bins[i].erase(new_end, forced_bins[i].end());
       }
     }
-  }
+  }*/
   return forced_bins;
 }
+
 
 }  // namespace LightGBM

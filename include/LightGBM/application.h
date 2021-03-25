@@ -44,10 +44,10 @@ class Application {
   void LoadData();
 
   /*! \brief Initialization before training*/
-  void InitTrain();
+//  void InitTrain();
 
   /*! \brief Main Training logic */
-  void Train();
+//  void Train();
 
   /*! \brief Initializations before prediction */
   void InitPredict();
@@ -79,12 +79,12 @@ inline void Application::Run() {
   if (config_.task == TaskType::kPredict || config_.task == TaskType::KRefitTree) {
     InitPredict();
     Predict();
-  } else if (config_.task == TaskType::kConvertModel) {
+  } /*else if (config_.task == TaskType::kConvertModel) {
     ConvertModel();
   } else {
     InitTrain();
     Train();
-  }
+  }*/
 }
 
 }  // namespace LightGBM

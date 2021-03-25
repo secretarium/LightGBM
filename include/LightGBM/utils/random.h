@@ -9,6 +9,7 @@
 #include <random>
 #include <set>
 #include <vector>
+#include <libc/stdlib.h>
 
 namespace LightGBM {
 
@@ -21,10 +22,11 @@ class Random {
   * \brief Constructor, with random seed
   */
   Random() {
-    std::random_device rd;
+    /*std::random_device rd;
     auto genrator = std::mt19937(rd());
     std::uniform_int_distribution<int> distribution(0, x);
-    x = distribution(genrator);
+    x = distribution(genrator);*/
+    x = rand();
   }
   /*!
   * \brief Constructor, with specific seed

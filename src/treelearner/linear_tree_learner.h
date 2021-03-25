@@ -6,11 +6,14 @@
 #define LIGHTGBM_TREELEARNER_LINEAR_TREE_LEARNER_H_
 
 #include <string>
+#pragma warning(push)
+#pragma warning(disable: 4244)
 #include <cmath>
+#pragma warning(pop)
 #include <cstdio>
 #include <memory>
 #include <random>
-#include <vector>
+//#include <vector>
 
 #include "serial_tree_learner.h"
 
@@ -24,18 +27,18 @@ class LinearTreeLearner: public SerialTreeLearner {
 
   void InitLinear(const Dataset* train_data, const int max_leaves) override;
 
-  Tree* Train(const score_t* gradients, const score_t *hessians, bool is_first_tree) override;
+  //Tree* Train(const score_t* gradients, const score_t *hessians, bool is_first_tree) override;
 
   /*! \brief Create array mapping dataset to leaf index, used for linear trees */
   void GetLeafMap(Tree* tree) const;
 
-  template<bool HAS_NAN>
+  /*template<bool HAS_NAN>
   void CalculateLinear(Tree* tree, bool is_refit, const score_t* gradients, const score_t* hessians, bool is_first_tree) const;
 
   Tree* FitByExistingTree(const Tree* old_tree, const score_t* gradients, const score_t* hessians) const override;
 
   Tree* FitByExistingTree(const Tree* old_tree, const std::vector<int>& leaf_pred,
-                          const score_t* gradients, const score_t* hessians) const override;
+                          const score_t* gradients, const score_t* hessians) const override;*/
 
   void AddPredictionToScore(const Tree* tree,
                             double* out_score) const override {
@@ -88,7 +91,7 @@ class LinearTreeLearner: public SerialTreeLearner {
         bool nan_found = false;
         for (int feat_ind = 0; feat_ind < num_feat; ++feat_ind) {
           float val = feat_ptr[leaf_num][feat_ind][i];
-          if (std::isnan(val)) {
+          if (!!__isnan(val)) {
             nan_found = true;
             break;
           }

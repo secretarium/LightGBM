@@ -11,7 +11,7 @@
 #include <LightGBM/train_share_states.h>
 #include <LightGBM/utils/openmp_wrapper.h>
 #include <LightGBM/utils/random.h>
-#include <LightGBM/utils/text_reader.h>
+//#include <LightGBM/utils/text_reader.h>
 
 #include <string>
 #include <functional>
@@ -48,7 +48,7 @@ class Metadata {
   * \brief Initialization will load query level informations, since it is need for sampling data
   * \param data_filename Filename of data
   */
-  void Init(const char* data_filename);
+  //void Init(const char* data_filename);
   /*!
   * \brief init as subset
   * \param metadata Filename of data
@@ -214,7 +214,7 @@ class Metadata {
   /*! \brief Load initial scores from file */
   void LoadInitialScore();
   /*! \brief Load wights from file */
-  void LoadWeights();
+  //void LoadWeights();
   /*! \brief Load query boundaries from file */
   void LoadQueryBoundaries();
   /*! \brief Load query wights */
@@ -423,7 +423,7 @@ class Dataset {
 
   LIGHTGBM_EXPORT void FinishLoad();
 
-  LIGHTGBM_EXPORT bool SetFloatField(const char* field_name, const float* field_data, data_size_t num_element);
+//  LIGHTGBM_EXPORT bool SetFloatField(const char* field_name, const float* field_data, data_size_t num_element);
 
   LIGHTGBM_EXPORT bool SetDoubleField(const char* field_name, const double* field_data, data_size_t num_element);
 
@@ -438,9 +438,9 @@ class Dataset {
   /*!
   * \brief Save current dataset into binary file, will save to "filename.bin"
   */
-  LIGHTGBM_EXPORT void SaveBinaryFile(const char* bin_filename);
+  //LIGHTGBM_EXPORT void SaveBinaryFile(const char* bin_filename);
 
-  LIGHTGBM_EXPORT void DumpTextFile(const char* text_filename);
+  //LIGHTGBM_EXPORT void DumpTextFile(const char* text_filename);
 
   LIGHTGBM_EXPORT void CopyFeatureMapperFrom(const Dataset* dataset);
 

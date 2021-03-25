@@ -5,12 +5,15 @@
 #ifndef LIGHTGBM_OBJECTIVE_BINARY_OBJECTIVE_HPP_
 #define LIGHTGBM_OBJECTIVE_BINARY_OBJECTIVE_HPP_
 
-#include <LightGBM/network.h>
+//#include <LightGBM/network.h>
 #include <LightGBM/objective_function.h>
 
 #include <string>
 #include <algorithm>
+#pragma warning(push)
+#pragma warning(disable: 4244)
 #include <cmath>
+#pragma warning(pop)
 #include <cstring>
 #include <vector>
 
@@ -72,10 +75,10 @@ class BinaryLogloss: public ObjectiveFunction {
       }
     }
     num_pos_data_ = cnt_positive;
-    if (Network::num_machines() > 1) {
+    /*if (Network::num_machines() > 1) {
       cnt_positive = Network::GlobalSyncUpBySum(cnt_positive);
       cnt_negative = Network::GlobalSyncUpBySum(cnt_negative);
-    }
+    }*/
     need_train_ = true;
     if (cnt_negative == 0 || cnt_positive == 0) {
       Log::Warning("Contains only one class");

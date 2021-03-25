@@ -59,15 +59,15 @@ class TreeLearner {
   * \param is_first_tree If linear tree learning is enabled, first tree needs to be handled differently
   * \return A trained tree
   */
-  virtual Tree* Train(const score_t* gradients, const score_t* hessians, bool is_first_tree) = 0;
+  //virtual Tree* Train(const score_t* gradients, const score_t* hessians, bool is_first_tree) = 0;
 
   /*!
   * \brief use an existing tree to fit the new gradients and hessians.
   */
-  virtual Tree* FitByExistingTree(const Tree* old_tree, const score_t* gradients, const score_t* hessians) const = 0;
+  /*virtual Tree* FitByExistingTree(const Tree* old_tree, const score_t* gradients, const score_t* hessians) const = 0;
 
   virtual Tree* FitByExistingTree(const Tree* old_tree, const std::vector<int>& leaf_pred,
-                                  const score_t* gradients, const score_t* hessians) const = 0;
+                                  const score_t* gradients, const score_t* hessians) const = 0;*/
 
   /*!
   * \brief Set bagging data
@@ -85,8 +85,8 @@ class TreeLearner {
   */
   virtual void AddPredictionToScore(const Tree* tree, double* out_score) const = 0;
 
-  virtual void RenewTreeOutput(Tree* tree, const ObjectiveFunction* obj, std::function<double(const label_t*, int)> residual_getter,
-                               data_size_t total_num_data, const data_size_t* bag_indices, data_size_t bag_cnt) const = 0;
+  //virtual void RenewTreeOutput(Tree* tree, const ObjectiveFunction* obj, std::function<double(const label_t*, int)> residual_getter,
+  //                             data_size_t total_num_data, const data_size_t* bag_indices, data_size_t bag_cnt) const = 0;
 
   TreeLearner() = default;
   /*! \brief Disable copy */

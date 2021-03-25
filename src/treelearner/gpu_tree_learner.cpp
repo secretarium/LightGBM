@@ -7,7 +7,7 @@
 #include "gpu_tree_learner.h"
 
 #include <LightGBM/bin.h>
-#include <LightGBM/network.h>
+//#include <LightGBM/network.h>
 #include <LightGBM/utils/array_args.h>
 
 #include <algorithm>
