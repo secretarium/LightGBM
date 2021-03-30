@@ -16,7 +16,9 @@
 #if defined(_WIN32)
 
 #ifdef _MSC_VER
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #endif
 
 #include <winsock2.h>

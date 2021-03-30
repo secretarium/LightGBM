@@ -32,7 +32,7 @@
 #include <mutex>
 #include <stdexcept>
 
-//#include "application/predictor.hpp"
+#include "application/predictor.hpp"
 //#include <LightGBM/utils/yamc/alternate_shared_mutex.hpp>
 //#include <LightGBM/utils/yamc/yamc_shared_lock.hpp>
 
@@ -62,7 +62,7 @@ yamc::shared_lock<yamc::alternate::shared_mutex> lock(&mtx);
 
 const int PREDICTOR_TYPES = 4;
 
-/*
+
 // Single row predictor to abstract away caching logic
 class SingleRowPredictor {
  public:
@@ -109,7 +109,7 @@ class SingleRowPredictor {
   int iter_;
   int num_total_model_;
 };
-*/
+
 class Booster {
  public:
   explicit Booster(const char* filename) {
@@ -377,7 +377,7 @@ class Booster {
   void RollbackOneIter() {
     // UNIQUE_LOCK(mutex_)
     boosting_->RollbackOneIter();
-  }
+  }*/
 
   void SetSingleRowPredictor(int start_iteration, int num_iteration, int predict_type, const Config& config) {
       // UNIQUE_LOCK(mutex_)
@@ -722,7 +722,7 @@ class Booster {
   void GetPredictAt(int data_idx, double* out_result, int64_t* out_len) const {
     boosting_->GetPredictAt(data_idx, out_result, out_len);
   }
-
+/*
   void SaveModelToFile(int start_iteration, int num_iteration, int feature_importance_type, const char* filename) const {
     boosting_->SaveModelToFile(start_iteration, num_iteration, feature_importance_type, filename);
   }
@@ -819,7 +819,7 @@ class Booster {
  private:
   const Dataset* train_data_;
   std::unique_ptr<Boosting> boosting_;
-  //std::unique_ptr<SingleRowPredictor> single_row_predictor_[PREDICTOR_TYPES];
+  std::unique_ptr<SingleRowPredictor> single_row_predictor_[PREDICTOR_TYPES];
 
   /*! \brief All configs */
   Config config_;
@@ -2094,7 +2094,7 @@ int LGBM_BoosterPredictForCSC(BoosterHandle handle,
                        out_result, out_len);
   API_END();
 }
-
+*/
 int LGBM_BoosterPredictForMat(BoosterHandle handle,
                               const void* data,
                               int data_type,
@@ -2121,6 +2121,7 @@ int LGBM_BoosterPredictForMat(BoosterHandle handle,
   API_END();
 }
 
+/*
 int LGBM_BoosterPredictForMatSingleRow(BoosterHandle handle,
                                        const void* data,
                                        int data_type,

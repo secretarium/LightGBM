@@ -8,7 +8,7 @@
 #include <LightGBM/utils/log.h>
 
 #include <algorithm>
-#include <sstream>
+#include <secretarium/libcpp/sstream>
 #include <unordered_map>
 
 #ifdef USE_HDFS

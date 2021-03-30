@@ -7,7 +7,7 @@
 
 #include <LightGBM/config.h>
 #include <LightGBM/meta.h>
-#include <LightGBM/network.h>
+//#include <LightGBM/network.h>
 #include <LightGBM/utils/common.h>
 
 #include <string>

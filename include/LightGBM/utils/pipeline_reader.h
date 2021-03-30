@@ -50,14 +50,15 @@ class PipelineReader {
     size_t last_read_cnt = 0;
     while (read_cnt > 0) {
       // start read thread
-      std::thread read_worker = std::thread(
+      /*std::thread read_worker = std::thread(
         [=, &last_read_cnt, &reader, &buffer_read] {
         last_read_cnt = reader->Read(buffer_read.data(), buffer_size);
-      });
+      });*/
+      last_read_cnt = reader->Read(buffer_read.data(), buffer_size);
       // start process
       cnt += process_fun(buffer_process.data(), read_cnt);
       // wait for read thread
-      read_worker.join();
+      //read_worker.join();
       // exchange the buffer
       std::swap(buffer_process, buffer_read);
       read_cnt = last_read_cnt;

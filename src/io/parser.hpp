@@ -31,7 +31,7 @@ class CSVParser: public Parser {
       if (idx == label_idx_) {
         *out_label = val;
         offset = -1;
-      } else if (std::fabs(val) > kZeroThreshold || std::isnan(val)) {
+      } else if (std::fabs(val) > kZeroThreshold || !!__isnan(val)) {
         out_features->emplace_back(idx + offset, val);
       }
       ++idx;
@@ -67,7 +67,7 @@ class TSVParser: public Parser {
       if (idx == label_idx_) {
         *out_label = val;
         offset = -1;
-      } else if (std::fabs(val) > kZeroThreshold || std::isnan(val)) {
+      } else if (std::fabs(val) > kZeroThreshold || !!__isnan(val)) {
         out_features->emplace_back(idx + offset, val);
       }
       ++idx;
